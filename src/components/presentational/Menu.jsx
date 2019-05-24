@@ -3,13 +3,25 @@ import PropTypes from "prop-types"
 import { withRouter } from 'react-router-dom'
 
 class Menu extends Component {
-  nextPath (path) {
-    this.props.history.push(path)
+  constructor(props) {
+    super(props)
+    this.state = {
+      isHidden: true
+    }
   }
+
+  toggleHidden () {
+    this.props.handleModal(false)
+    this.setState({
+      isHidden: false
+    })
+  }
+
   render () {
     return (
       <div className = "menu-container">
-        <button id="adopt-btn" onClick={() => this.nextPath('/forsale')}> Adopt a pet!</button>
+        <button id='sign-in-btn' onClick={this.toggleHidden.bind(this)}>Sign In</button>
+        <button id='create-acc-btn' onClick={this.toggleHidden.bind(this)}>Create Account</button>
       </div>
     )
   }

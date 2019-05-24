@@ -1,3 +1,123 @@
-h1 {
-  color: red
+/* TODO: Separate into css modules by component */
+
+@font-face {
+  font-family: 'Cute Font';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/cute-font-v7-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Cute Font Regular'), local('CuteFont-Regular'),
+       url('../fonts/cute-font-v7-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/cute-font-v7-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/cute-font-v7-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/cute-font-v7-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/cute-font-v7-latin-regular.svg#CuteFont') format('svg'); /* Legacy iOS */
+}
+
+.outer-container {
+  font-family: 'Cute Font', cursive;
+  text-align: center;
+}
+
+.menu-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 160px;
+}
+
+.item-container {
+  display: inline-block;
+  margin: 15px;
+  border: 2px solid #e8e8e8;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.market-container {
+  width: 100%;
+}
+
+.modal {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border: 3px solid black;
+  border-radius: 10px;
+  background: white;
+  margin: 0 auto;
+  right: 0;
+  left: 0;
+  top: 150px;
+}
+
+button {
+  padding: 2px 10px;
+  border-style: none;
+  border-radius: 4px;
+  font-size: 1.5rem;
+  font-family: 'Cute Font', cursive;
+}
+
+img {
+  width: 150px;
+}
+
+#title {
+  font-size: 5rem;
+}
+
+#adopt-btn {
+  background-color: #ff5454;
+  color: white;
+  font-size: 2rem;
+  padding: 10px;
+}
+
+#buy-btn {
+  background-color: #ff5454;
+  color: white;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  padding: 1px 20px;
+}
+
+#home-btn {
+  padding: 1px 20px;
+  background-color: #3bba18;
+  color: white;
+  font-size: 2rem;
+}
+
+#wallet-group {
+  text-align: center;
+}
+
+#sign-in-btn {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 2px 20px;
+  background-color: #2d68bc;
+  color: white;
+}
+
+#create-acc-btn {
+  margin-left: 5px;
+  background-color: #ff7b30;
+  color: white;
+}
+
+#heart-title {
+  width: 30px;
+}
+
+#close-modal-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 80px;
+}
+
+#enter-modal-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 15px;
 }
