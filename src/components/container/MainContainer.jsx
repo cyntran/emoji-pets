@@ -35,7 +35,7 @@ class MainContainer extends Component {
 }
 
 async function getAnimal (unicode) {
-  let response = await fetch(`http://localhost:8080/item/${unicode}`)
+  let response = await fetch(`http://localhost:8080/item/${unicode}`, { credentials: 'include' })
   let data = await response.json()
   return data.path
 }

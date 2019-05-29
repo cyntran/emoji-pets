@@ -35,6 +35,55 @@ function addAllEmojis () {
   printData ()
 }
 
+async function getUserById (id) {
+  try {
+    return await db.get(`user/${id}`)
+  } catch (err) {
+    if (err.notFound) {
+      return null
+    }
+    throw err
+  }
+}
+
+
+// retrieves user id with email
+// then retrieves user object with id
+async function getUserByEmail (email) {
+  try {
+    let id = await db.get(`user/email/${email}`)
+    return await getUserById (id)
+  } catch (err) {
+    if (err.notFound) return null
+    throw err
+  }
+}
+
+async function addUser (email, uId, passwordHash) {
+  try {
+    let info = {
+      id: uId,
+      email: email,
+      hash: passwordHash,
+      items: []
+    }
+    await db.put(`user/email/${email}`, uId)
+    return await db.put(`user/${uId}`, info)
+  } catch (err) {
+    throw err
+  }
+}
+
+async function updateUserItems (id, item) {
+  try {
+    let userInfo = await getUser(id)
+    userInfo.items[item] = item
+    return await db.put(`user/${id}`, userInfo)
+  } catch (err) {
+    throw err
+  }
+}
+
 function forSale (unicode) {
   let min = parseInt('1f400', 16)
   let max = min + 25
@@ -69,6 +118,7 @@ async function getForSale () {
     emoji += 1
     emoji = emoji.toString(16)
   }
+  console.log(arr)
   return arr
 }
 
@@ -85,5 +135,9 @@ async function updateMarketItem (unicode, price) {
 
 module.exports = {
   getEmojiByUnicode,
-  getForSale
+  getForSale,
+  getUserById,
+  getUserByEmail,
+  addUser,
+  updateMarketItem
 }

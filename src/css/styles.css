@@ -39,15 +39,26 @@
 
 .modal {
   position: absolute;
+  text-align: left;
   width: 500px;
-  height: 500px;
+  height: 400px;
   border: 3px solid black;
   border-radius: 10px;
   background: white;
   margin: 0 auto;
   right: 0;
   left: 0;
-  top: 150px;
+  top: 0;
+}
+
+.acc-h1 {
+  text-align: center;
+  font-size: 4rem;
+  margin-top: -2px;
+}
+
+.sign-in {
+  margin-top: -50px;
 }
 
 button {
@@ -60,6 +71,29 @@ button {
 
 img {
   width: 150px;
+}
+
+input {
+  width: 300px;
+  height: 30px;
+  font-size: 1.4rem;
+  margin-left: 30px;
+  padding-left: 10px;
+  border: 3px solid #e8e5e5;
+}
+
+input:focus {
+  background: #d7f4f1;
+}
+
+label {
+  font-size: 2rem;
+  text-align: left;
+  margin-left: 30px
+}
+
+#sign-in-modal {
+  height: 320px;
 }
 
 #title {
@@ -113,11 +147,26 @@ img {
 #close-modal-btn {
   position: absolute;
   bottom: 20px;
-  right: 80px;
+  right: 100px;
+  background: #ff5b5b;
+  color: white;
 }
 
 #enter-modal-btn {
   position: absolute;
   bottom: 20px;
   right: 15px;
+  background: #4db52b;
+  color: white;
+  width: 80px;
+  padding: 2px 10px;
+  border-style: none;
+  border-radius: 4px;
+  font-size: 1.5rem;
+  font-family: 'Cute Font', cursive;
+  height: 33px;
+}
+
+#unauthorized {
+  font-size: 3.5rem;
 }

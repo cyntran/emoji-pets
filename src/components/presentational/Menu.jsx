@@ -1,27 +1,43 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { withRouter } from 'react-router-dom'
+import SignInModal from "./SignInModal.jsx"
+import SignUpModal from "./SignUpModal.jsx"
 
 class Menu extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isHidden: true
+      isHidden: true,
+      type: null
     }
   }
 
-  toggleHidden () {
-    this.props.handleModal(false)
+  toggleSignIn() {
     this.setState({
+      type: 'sign-in',
       isHidden: false
     })
+  }
+
+  toggleCreate() {
+    this.setState({
+      type: 'create',
+      isHidden: false
+    })
+  }
+
+  checkHidden = (data) => {
+    this.setState({ isHidden: data})
   }
 
   render () {
     return (
       <div className = "menu-container">
-        <button id='sign-in-btn' onClick={this.toggleHidden.bind(this)}>Sign In</button>
-        <button id='create-acc-btn' onClick={this.toggleHidden.bind(this)}>Create Account</button>
+        {!this.state.isHidden && this.state.type === 'sign-in' && <SignInModal handleModal={this.checkHidden}/>}
+        {!this.state.isHidden && this.state.type === 'create' && <SignUpModal handleModal={this.checkHidden}/>}
+        <button id='sign-in-btn' onClick={this.toggleSignIn.bind(this)}>Sign In</button>
+        <button id='create-acc-btn' onClick={this.toggleCreate.bind(this)}>Create Account</button>
       </div>
     )
   }

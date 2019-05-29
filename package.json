@@ -40,7 +40,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "connect-redis": "^3.4.1",
+    "cors": "^2.8.5",
     "express": "^4.17.0",
     "express-session": "^1.16.1",
     "level": "^5.0.1",
