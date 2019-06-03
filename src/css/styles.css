@@ -37,11 +37,32 @@
   width: 100%;
 }
 
+.pet-form-container {
+  position: fixed;
+  z-index: 1000;
+  width: 400px;
+  height: 490px;
+  top: 100px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background: white;
+  border: 3px solid black;
+  text-align: left;
+}
+
+.pets-container {
+  display: inline-block;
+  margin: 15px;
+  padding: 20px;
+}
+
 .modal {
+  z-index: 1000;
   position: absolute;
   text-align: left;
   width: 500px;
-  height: 400px;
+  height: 450px;
   border: 3px solid black;
   border-radius: 10px;
   background: white;
@@ -59,6 +80,34 @@
 
 .sign-in {
   margin-top: -50px;
+}
+
+.error-msg {
+  margin-bottom: -10px;
+  font-size: 1.2rem;
+  display: inline-block;
+  margin-left: 10px;
+  color: red;
+}
+
+.error-msg-credentials {
+  position: absolute;
+  top: 48px;
+  left: 185px;
+  font-size: 1.2rem;
+}
+
+.sell-btn {
+  background: #f44b42;
+  color: white;
+  width: 60px;
+  height: 20px;
+  font-size: 1.2rem;
+  line-height: 10px;
+}
+
+.pet-form-labels {
+  text-align: left;
 }
 
 button {
@@ -93,11 +142,15 @@ label {
 }
 
 #sign-in-modal {
-  height: 320px;
+  height: 350px;
 }
 
 #title {
   font-size: 5rem;
+}
+
+#market-text {
+  margin-top: 100px
 }
 
 #adopt-btn {
@@ -169,4 +222,96 @@ label {
 
 #unauthorized {
   font-size: 3.5rem;
+}
+
+#login-buy {
+  z-index: 1000;
+  background: #41a8fc;
+  position: fixed;
+  color: white;
+  border: 1px solid #41a8fc;
+  border-radius: 4px;
+  font-size: 2rem;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+}
+
+#emoji-hand {
+  width: 20px;
+}
+
+/** KEY FRAME for cute duck **/
+@keyframes dance {
+  from {
+    transform: rotate(25deg)
+  } to {
+    transform: rotate(-25deg)
+  }
+}
+
+#cute-duck-img {
+  animation: dance 1s infinite alternate;
+  margin-top: 50px;
+}
+
+#sign-out-btn {
+  margin-top: 15px;
+  font-size: 1.2rem;
+  background: #7a7a7a;
+  color: white;
+}
+
+#pet-form-title {
+  text-align: center;
+}
+
+#pet-name {
+  font-size: 2rem;
+}
+
+#pet-age {
+  margin-top: -40px;
+  font-size: 1.2rem;
+}
+
+#pet-name-input {
+  width: 200px;
+  margin-left: 20px;
+}
+
+#animal-bio {
+  height: 180px;
+  width: 300px;
+  margin-left: 20px;
+  border: 3px solid #e8e5e5;
+  font-size: 1.2rem;
+  resize: none;
+}
+
+#adopt-form-btn {
+  position: absolute;
+  right: 100px;
+  bottom: 25px;
+  background: #ff5454;
+  color: white;
+}
+
+#close-adopt-form {
+  position: absolute;
+  right: 30px;
+  bottom: 25px;
+}
+
+#adopt-text-limit {
+  position: absolute;
+  font-size: 1rem;
+  bottom: 50px;
+  left: 22px;
+}
+
+#purchasing-div {
+  margin-left: 50px;
+  color: red;
+  font-size: 1.7rem;
 }

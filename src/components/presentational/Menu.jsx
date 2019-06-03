@@ -5,8 +5,8 @@ import SignInModal from "./SignInModal.jsx"
 import SignUpModal from "./SignUpModal.jsx"
 
 class Menu extends Component {
-  constructor(props) {
-    super(props)
+  constructor() {
+    super()
     this.state = {
       isHidden: true,
       type: null
@@ -34,8 +34,8 @@ class Menu extends Component {
   render () {
     return (
       <div className = "menu-container">
-        {!this.state.isHidden && this.state.type === 'sign-in' && <SignInModal handleModal={this.checkHidden}/>}
-        {!this.state.isHidden && this.state.type === 'create' && <SignUpModal handleModal={this.checkHidden}/>}
+        { !this.state.isHidden && this.state.type === 'sign-in' && <SignInModal handleModal={this.checkHidden}/> }
+        { !this.state.isHidden && this.state.type === 'create' && <SignUpModal handleModal={this.checkHidden}/> }
         <button id='sign-in-btn' onClick={this.toggleSignIn.bind(this)}>Sign In</button>
         <button id='create-acc-btn' onClick={this.toggleCreate.bind(this)}>Create Account</button>
       </div>
@@ -44,4 +44,4 @@ class Menu extends Component {
 }
 
 
-export default withRouter(Menu)
+export default withRouter(Menu);

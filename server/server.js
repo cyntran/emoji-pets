@@ -8,16 +8,11 @@ let LocalStrategy = require('passport-local').Strategy
 let RedisStore = require('connect-redis')(session)
 let bcrypt = require('bcrypt')
 let crypto = require('crypto')
+let forSale = []
 
 
 //TODO: error handling
 
-// takes data from post request and finds matching
-// user in the database to check credentials match
-// return back to /login callback with user object.
-// local strategy uses a username and password to authenticate
-// a user, but we use an email address instead of the username, so we
-// created an alias.
 passport.use(new LocalStrategy(
   { usernameField: 'email' },
   async (email, password, done) => {
@@ -43,14 +38,12 @@ passport.use(new LocalStrategy(
   }
 ))
 
-// saves user id with session id in store.
+
 passport.serializeUser((user, done) => {
   console.log('UserId is saved to the session file here.')
   done(null, user.id)
 })
 
-// finds user id by matching session id to
-// the session file store and retrieved user
 passport.deserializeUser(async (id, done) => {
   console.log('Deserializing user and retrieving user')
   const user = await db.getUserById(id)
@@ -78,7 +71,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Enable CORS
 let allowedOrigins = [
   'http://localhost:8081'
 ]
@@ -92,6 +84,16 @@ app.use((req, res, next) => {
   next()
 })
 
+app.get('/profile', async (req, res) => {
+  if (!req.user) {
+    res.status(500).json({ error: 'User not logged in.' })
+    return
+  }
+  let user = await db.getUserById(req.user.id)
+  console.log(user)
+  res.status(200).json(user)
+})
+
 app.post('/signup', async (req, res) => {
   console.log(await db.getUserByEmail(req.body.email))
   if (await db.getUserByEmail(req.body.email) == null) {
@@ -99,28 +101,27 @@ app.post('/signup', async (req, res) => {
     let salt = 10
     bcrypt.hash(req.body.password, salt, async (err, hash) => {
       if (hash) {
-        await db.addUser(req.body.email, userId, hash)
-        console.log(hash)
-        res.status(200).json({ message: 'Account creation successful.'})
-        return
+        let user = await db.addUser(req.body.email, userId, hash)
+        req.login(user, (err) => {
+          if (err) {
+            res.status(500).json({ message: 'Database save error.', loggedIn: false })
+            return
+          } else {
+            res.status(200).json({ loggedIn: true })
+            return
+          }
+        })
       } else {
-        res.status(500).json({message: 'Could not hash password.'})
+        res.status(500).json({message: 'Could not save password.'})
         return
       }
     })
   } else {
-    res.status(500).json({ message: 'User already in database '})
+    res.status(500).json({ message: 'Email already in use.'})
     return
   }
 })
 
-// after local strategy is authenticated,
-// passport will add a login method to request object.
-// req.login takes in user object we received from
-// local strategy and calls passport.serializeUser().
-// it saves that user id to session store and also
-// saves the user id to req.session.passport and
-// adds the user object to req.user
 app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (info) { return res.status(500).json(info.message) }
@@ -131,7 +132,7 @@ app.post('/login', (req, res, next) => {
       if (err) {
         return next(err)
       }
-      return res.status(200).json({ message:'You were authenticated.'})
+      return res.status(200).json({ message:'User authenticated.'})
     })
   })(req, res, next)
 })
@@ -148,24 +149,65 @@ app.get('/item/:id', async (req, res) => {
   res.status(200).json(emoji)
 })
 
-app.get('/forsale', async (req, res) =>  {
-  if (req.user) {
-    res.status(200).json(await db.getForSale())
-    return
-  } else {
-    res.status(500).json({ error: 'You must be signed in. '})
+// TODO: update user balance as well...
+// Handle errors.
+app.post('/item/buy', async (req, res) => {
+  if (!req.user) {
+    res.status(500).json({ unauthorized: 'You are not signed in! '})
   }
+  console.log(`-------/item/buy NAME------- ${req.body.name}`)
+
+  await db.addUserItem(req.user.id, req.body.name, req.body.info)
+  .then((userInfo) => {
+    res.status(200).json(userInfo)
+    return
+  })
+  .catch(err => {
+    console.log(err)
+    res.status(500).json({ message: 'Sorry -- could not buy.' })
+    return
+  })
 })
 
-app.post('/forsale/updateprice', async (req, res) => {
-  let updatedItem = await db.updateMarketItem(req.body.id, req.body.price)
-  res.status(200).json(updatedItem)
+app.post('/item/sell', (req, res) => {
+  if (!req.user) {
+    res.status(500).json({ unauthorized: 'You are not signed in!' })
+  }
+  let name = req.body.name
+  let info = req.body.info
+  let userId = req.user.id
+  db.removeUserItem(userId, name, info)
+  .then((userInfo) => {
+    console.log(userInfo)
+    res.status(200).send(userInfo)
+    return
+  })
+  .catch(err => {
+    console.log(err)
+    res.status(500).json({ message: 'Sorry -- could not sell.' })
+    return
+  })
+})
+
+setInterval(async () => {
+  forSale = await db.getForSale()}, 1000)
+
+app.get('/forsale', (req, res) =>  {
+  res.status(200).json(forSale)
+})
+
+app.get('/forsale/item/:id', async (req, res) => {
+  let item = await db.getItemForSale(req.params.id)
+  if (item.message) {
+    res.status(500).json(item.message)
+    return
+  }
+  res.status(200).json(item)
 })
 
 app.listen(8080, () => {
   console.log('Listening on localhost:8080')
 })
-
 
 // Helper functions
 function genId () {

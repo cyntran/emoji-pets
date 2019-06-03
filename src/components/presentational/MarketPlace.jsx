@@ -8,16 +8,25 @@ class MarketPlace extends Component {
   constructor () {
     super()
     this.state = {
-      items: []
+      items: [],
+      user: false,
+      displayMenu: false,
     }
   }
   componentDidMount () {
     getForSale().then((val) => {
-      console.log(val)
       if (!val.error) {
         this.setState({ items: val })
       } else {
         this.setState({ items: false })
+      }
+    })
+    getUser()
+      .then((userData) => {
+        if (userData.message) {
+          this.setState({ displayMenu: true })
+        } else {
+          this.setState({ user: userData})
       }
     })
   }
@@ -26,27 +35,46 @@ class MarketPlace extends Component {
   }
 
   render () {
-    const { items } = this.state
     return (
       <div className= "market-container">
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
-        <Menu />
-        <button id="home-btn" onClick={() => this.nextPath('/')}> Go Back </button>
+        { displayMenu(this.state.displayMenu) }
+        <button id="home-btn" onClick={() => this.nextPath('/')}>Profile</button>
         <h1 id='market-text'>Welcome to the marketplace!</h1>
-        {parseItems (items)}
+        {parseItems(this.state.items)}
       </div>
     )
   }
 }
 
-function parseItems (items) {
-  if (!items) {
-    return (
-      <div id='unauthorized'>You must be logged in to see the animals!</div>
-    )
+function displayMenu (display) {
+  if (display) {
+    return <Menu />
   }
+}
+
+function displayPetForm (display) {
+  if (display) {
+    return <PetForm />
+  }
+}
+
+// TODO: right now, the itemID is just the unicode value.
+// Create a random string for item ID for new market place items.
+function parseItems (items) {
   return items.map((item, i) =>
-    <Item src={item.path} itemID={item.path.slice(20)} key={i} price={item.price}/>)
+    <Item key={i} item={item}/>)
+}
+
+async function getUser () {
+  let response = await fetch(`http://localhost:8080/profile`, { credentials: 'include' })
+  if (response.ok) {
+    return response.json()
+  } else {
+    return {
+      message: 'Cannot retrieve account.'
+    }
+  }
 }
 
 async function getForSale () {

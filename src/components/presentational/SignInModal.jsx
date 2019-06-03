@@ -6,30 +6,31 @@ class SignInModal extends Component {
     super(props)
     this.state = {
       isHidden: false,
-      value: 'hi'
+      errors: false,
+      signin: false
     }
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleChange (e) {
-    console.log('i am changing')
-    this.setState({
-      value: e.target.value
-    })
-  }
-
   handleSubmit (e) {
     e.preventDefault()
-    const data = {}
     let parseData = new FormData(e.target)
+    let data = parseInput(parseData)
+    let postData = data.data
+    let errorData = data.errors
 
-    parseData.forEach((v, k) => {
-      data[k] = v
+    this.setState({
+      errors: errorData
     })
+
+    if (!isEmpty(errorData)) {
+      console.log(errorData)
+      return
+    }
 
     fetch('http://localhost:8080/login', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(postData),
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
@@ -37,10 +38,12 @@ class SignInModal extends Component {
     })
     .then(response => {
       if (response.ok) {
-        window.location.replace('/')
+        window.location.reload()
         return
       } else {
-        console.log('you have not signed in')
+        this.setState({
+          signIn: 'Oops -- wrong credentials.'
+        })
       }
      })
   }
@@ -56,15 +59,49 @@ class SignInModal extends Component {
     return (
       <div className='modal' id='sign-in-modal'>
         <h1 className='acc-h1'>Sign in!</h1>
+        {this.state.signIn && <p className='error-msg error-msg-credentials'>{this.state.signIn}</p>}<br />
         <form onSubmit={this.handleSubmit} className='sign-in' >
-          <label>Email Address: <br /><input name='email' type='text'/></label><br />
-          <label>Password: <br /><input name='password' type='password'/></label>
+
+          <label>Email Address:
+            {this.state.errors.email && <p className='error-msg' id='error-msg-email'>{this.state.errors.email}</p>}
+            <br/ ><input type='text' name='email' data-parse='lowercase'/>
+          </label><br />
+
+          <label>Password:
+            {this.state.errors.password && <p className='error-msg' id='error-msg-pw'>{this.state.errors.password}</p>}
+            <br /><input type='password' name='password' data-parse='lowercase'/>
+          </label>
+
           <button id='close-modal-btn' onClick={this.toggleHidden.bind(this)}>Close</button>
           <input type='submit' id='enter-modal-btn' value='Submit!'/>
         </form>
       </div>
     )
   }
+}
+
+// helper function
+function parseInput (parseData) {
+  let data  = {}
+  let errors = {}
+  parseData.forEach((v, k) => {
+    if (!v) {
+      errors[k] = `Please enter your ${k}.`
+    }
+    if (k === 'email' && v && (v.indexOf('@') === -1 || v.indexOf('.') === -1)) {
+      errors[k] = `Please enter a valid email address`
+    }
+    data[k] = v.toLowerCase()
+  })
+  return {
+    data: data,
+    errors: errors
+  }
+}
+
+// checks if object is empty
+function isEmpty (obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object
 }
 
 
