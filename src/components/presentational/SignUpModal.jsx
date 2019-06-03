@@ -15,49 +15,51 @@ class SignUpModal extends Component {
 
   handleSubmit (e) {
     e.preventDefault()
-    let parseData = new FormData(e.target)
-    let data = parseInput(parseData)
-    let postData = data.data
-    let errorData = data.errors
+    if (e.type == 'submit') {
+      let parseData = new FormData(e.target)
+      let data = parseInput(parseData)
+      let postData = data.data
+      let errorData = data.errors
 
-    this.setState({
-      errors: errorData
-    })
+      this.setState({
+        errors: errorData
+      })
 
-    if (!isEmpty(errorData)) {
-      console.log(errorData)
-      return
+      if (!isEmpty(errorData)) {
+        console.log(errorData)
+        return
+      }
+
+      fetch('http://localhost:8080/signup', {
+        method: 'POST',
+        body: JSON.stringify(postData),
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload()
+          return
+        } else {
+          return response.json()
+        }
+      })
+      .then(res => {
+        this.setState({
+          credentials: Object.values(res)
+        })
+      })
+      }
     }
 
-    fetch('http://localhost:8080/signup', {
-      method: 'POST',
-      body: JSON.stringify(postData),
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      if (response.ok) {
-        window.location.reload()
-        return
-      } else {
-        return response.json()
-      }
-    })
-    .then(res => {
+    toggleHidden () {
+      this.props.handleModal(true)
       this.setState({
-        credentials: Object.values(res)
+        isHidden: true
       })
-    })
-  }
-
-  toggleHidden () {
-    this.props.handleModal(true)
-    this.setState({
-      isHidden: true
-    })
-  }
+    }
 
   render () {
     return (
@@ -78,16 +80,17 @@ class SignUpModal extends Component {
 
           <label>Password:
             {this.state.errors.password && <p className='error-msg' id='error-msg-pw'>{this.state.errors.password}</p>}
-            <br /><input type='password' name='password' data-parse='lowercase'/>
+            <br /><input type='password' name='password' data-parse='lowercase' />
           </label>
-
-          <button id='close-modal-btn' onClick={this.toggleHidden.bind(this)}>Close</button>
           <input type='submit' id='enter-modal-btn' value='Submit!'/>
+          <button id='close-modal-btn' onClick={this.toggleHidden.bind(this)}>Close</button>
         </form>
       </div>
     )
   }
 }
+
+
 
 // helper functions below
 function parseInput (parseData) {

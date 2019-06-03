@@ -14,38 +14,40 @@ class SignInModal extends Component {
 
   handleSubmit (e) {
     e.preventDefault()
-    let parseData = new FormData(e.target)
-    let data = parseInput(parseData)
-    let postData = data.data
-    let errorData = data.errors
+    if (e.type == 'submit') {
+      let parseData = new FormData(e.target)
+      let data = parseInput(parseData)
+      let postData = data.data
+      let errorData = data.errors
 
-    this.setState({
-      errors: errorData
-    })
+      this.setState({
+        errors: errorData
+      })
 
-    if (!isEmpty(errorData)) {
-      console.log(errorData)
-      return
-    }
-
-    fetch('http://localhost:8080/login', {
-      method: 'POST',
-      body: JSON.stringify(postData),
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-    .then(response => {
-      if (response.ok) {
-        window.location.reload()
+      if (!isEmpty(errorData)) {
+        console.log(errorData)
         return
-      } else {
-        this.setState({
-          signIn: 'Oops -- wrong credentials.'
-        })
       }
-     })
+
+      fetch('http://localhost:8080/login', {
+        method: 'POST',
+        body: JSON.stringify(postData),
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload()
+          return
+        } else {
+          this.setState({
+            signIn: 'Oops -- wrong credentials.'
+          })
+        }
+       })
+    }
   }
 
   toggleHidden () {
@@ -72,8 +74,8 @@ class SignInModal extends Component {
             <br /><input type='password' name='password' data-parse='lowercase'/>
           </label>
 
-          <button id='close-modal-btn' onClick={this.toggleHidden.bind(this)}>Close</button>
           <input type='submit' id='enter-modal-btn' value='Submit!'/>
+          <button id='close-modal-btn' onClick={this.toggleHidden.bind(this)}>Close</button>
         </form>
       </div>
     )
