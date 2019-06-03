@@ -310,13 +310,7 @@ label {
   left: 22px;
 }
 
-#purchasing-div-new-item {
-  margin-left: 50px;
-  color: red;
-  font-size: 1.7rem;
-}
-
-#purchasing-div-old-item {
+#purchasing-div {
   z-index: 1000;
   background: #ff4f4f;
   position: fixed;
@@ -326,4 +320,5 @@ label {
   top: 50%;
   left: 0;
   right: 0;
+  text-align: center;
 }

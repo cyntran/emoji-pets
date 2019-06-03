@@ -63,7 +63,7 @@ class Item extends Component {
     let emojiHand = (<img id='emoji-hand' src='../images/emoji-svg/1f446.svg'/>)
     return (
       <div className='item-container'>
-        {this.state.showPurchasingDiv && <div id='purchasing-div-old-item'>Purchasing, please wait.</div>}
+        {this.state.showPurchasingDiv && <div id='purchasing-div'>Purchasing, please wait.</div>}
         <img src={this.state.item.path} name={this.state.name}/>
         <p>Price: {this.state.price} coins</p>
         <button id='buy-btn' name={this.state.name}
