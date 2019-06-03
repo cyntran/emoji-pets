@@ -63,7 +63,7 @@ class PetForm extends Component {
     return (
       <div className='pet-form-container'>
         <h1 id='pet-form-title'>Adoption Form</h1>
-        {this.state.showPurchasingDiv && <div id='purchasing-div'>Purchasing! Please wait...</div>}
+        {this.state.showPurchasingDiv && <div id='purchasing-div-new-item'>Purchasing! Please wait...</div>}
         <form onSubmit={this.handleSubmit}>
           <label className='pet-form-labels'>Pet Name:
             {this.state.errors && <p className='error-msg' id='pet-name-err'>{this.state.errors.name}</p>}

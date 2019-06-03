@@ -310,8 +310,20 @@ label {
   left: 22px;
 }
 
-#purchasing-div {
+#purchasing-div-new-item {
   margin-left: 50px;
   color: red;
   font-size: 1.7rem;
+}
+
+#purchasing-div-old-item {
+  z-index: 1000;
+  background: #ff4f4f;
+  position: fixed;
+  color: white;
+  border-radius: 4px;
+  font-size: 2rem;
+  top: 50%;
+  left: 0;
+  right: 0;
 }

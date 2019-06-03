@@ -12,7 +12,8 @@ class Item extends Component {
       price: this.props.item.price,
       item: this.props.item,
       signedIn: true,
-      showModal: false
+      showModal: false,
+      showPurchasingDiv: false
     }
     console.log(`Item state object: ${JSON.stringify(this.state, null, 2)}`)
   }
@@ -30,6 +31,10 @@ class Item extends Component {
             this.setState({ showModal: true })
             return
           } else {
+            this.setState({
+              showPurchasingDiv: true
+            })
+            setTimeout(() => window.location.reload(), 1000)
             fetch(`http://localhost:8080/item/buy`, {
               method: 'POST',
               body: JSON.stringify({ name: this.state.name, info: this.state.item}),
@@ -37,7 +42,7 @@ class Item extends Component {
               headers: {
                 'Content-Type': 'application/json'
               }
-            }).then(window.location.reload())
+            })
           }
         })
       } else {
@@ -58,6 +63,7 @@ class Item extends Component {
     let emojiHand = (<img id='emoji-hand' src='../images/emoji-svg/1f446.svg'/>)
     return (
       <div className='item-container'>
+        {this.state.showPurchasingDiv && <div id='purchasing-div-old-item'>Purchasing, please wait.</div>}
         <img src={this.state.item.path} name={this.state.name}/>
         <p>Price: {this.state.price} coins</p>
         <button id='buy-btn' name={this.state.name}
