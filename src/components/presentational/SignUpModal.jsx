@@ -66,9 +66,9 @@ class SignUpModal extends Component {
         {this.state.credentials && <p className='error-msg error-msg-credentials'>{this.state.credentials}</p>}<br />
         <form onSubmit={this.handleSubmit} className='sign-in'>
 
-          <label>Name:
-            {this.state.errors.name && <p className='error-msg' id='error-msg-name'>{this.state.errors.name}</p>}
-            <br/ ><input type='text' name='name' data-parse='lowercase'/>
+          <label>Username:
+            {this.state.errors.username && <p className='error-msg' id='error-msg-name'>{this.state.errors.username}</p>}
+            <br/ ><input type='text' name='username' data-parse='lowercase'/>
           </label><br />
 
           <label>Email Address:
@@ -93,11 +93,17 @@ class SignUpModal extends Component {
 function parseInput (parseData) {
   let data  = {}
   let errors = {}
+  let eReg =  /\S+@\S+\.\S+/
+  let uReg = /[^a-zA-Z0-]/
   parseData.forEach((v, k) => {
     if (!v) {
       errors[k] = `*Required: Please enter your ${k}.`
     }
-    if (k === 'email' && v && (v.indexOf('@') === -1 || v.indexOf('.') === -1)) {
+    if (k === 'username' && v.match(uReg)) {
+      errors[k] = `Please enter a valid username`
+    }
+    if (k === 'email' &&
+      (v.indexOf('@') === -1 || v.indexOf('.') === -1 || v.match(eReg))) {
       errors[k] = `Please enter a valid email address`
     }
     data[k] = v.toLowerCase()
