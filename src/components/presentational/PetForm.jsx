@@ -40,23 +40,19 @@ class PetForm extends Component {
     })
     console.log('newPostData', newPostData)
 
-    let errorData = data.error
+    if (!isEmpty(data.error)) {
+      this.setState({
+        errors: data.error
+      })
+    } else {
+      this.setState({
+        showPurchasingDiv: true,
+      })
 
-    this.setState({
-      error: errorData
-    })
+      setTimeout(() => window.location.reload(), 1000)
 
-    if (!isEmpty(errorData)) {
-      console.log(errorData)
-      return
+      buy(newPostData, this.state.name)
     }
-    this.setState({
-      showPurchasingDiv: true,
-    })
-
-    setTimeout(() => window.location.reload(), 1000)
-
-    buy(newPostData, this.state.name)
   }
 
   render () {
@@ -66,7 +62,7 @@ class PetForm extends Component {
         {this.state.showPurchasingDiv && <div id='purchasing-div'>Purchasing! Please wait...</div>}
         <form onSubmit={this.handleSubmit}>
           <label className='pet-form-labels'>Pet Name:
-            {this.state.errors && <p className='error-msg' id='pet-name-err'>{this.state.errors.name}</p>}
+            { this.state.errors && <p className='error-msg' id='pet-name-err'>{this.state.errors}</p> }
             <br/ ><input id='pet-name-input' type='text' name='name' maxLength="20"/>
           </label><br />
 
