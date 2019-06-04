@@ -96,9 +96,11 @@ function logout() {
 function showWallet (usrInfo) {
   return (
     <div id='wallet-group'>
-      <h1 id='your-wallet'> Your Wallet </h1>
-      <h2 id='balance'> Your Balance: { usrInfo.balance } coins </h2>
+      <h1 id='your-wallet'>{usrInfo.username}'s dashboard </h1>
+      <button id='wallet-amt-btn'>Coins:{usrInfo.balance}</button>
+      <p class='user-items-tag'>Pets</p> <hr id='pets-hr'/>
       {showPets(usrInfo)}
+      <p class='user-items-tag'>Items</p> <hr id='pets-hr'/>
     </div>
   )
 }
