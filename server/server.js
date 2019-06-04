@@ -1,6 +1,7 @@
 let express = require('express')
 let db = require('./database.js')
 let session = require('express-session')
+let path = require('path')
 let uuid = require('uuid/v4')
 let bodyParser = require('body-parser')
 let passport = require('passport')
@@ -84,6 +85,25 @@ app.use((req, res, next) => {
   next()
 })
 
+
+app.get('/profile/:username', async (req, res) => {
+  console.log(req.params.username)
+  if (!req.user) {
+    console.log('oops no user')
+    res.status(500).json({ message: 'You must logged in to see this profile. '})
+    return
+  }
+  try {
+    let user = await db.getUserByUsername(req.params.username)
+    res.status(200).json(user)
+  } catch (err) {
+    console.log(err)
+    res.status(404).json({ message: 'User not found.' })
+  }
+})
+
+
+//TODO: merge this into the one above
 app.get('/profile', async (req, res) => {
   if (!req.user) {
     res.status(500).json({ error: 'User not logged in.' })
@@ -95,13 +115,12 @@ app.get('/profile', async (req, res) => {
 })
 
 app.post('/signup', async (req, res) => {
-  console.log(await db.getUserByEmail(req.body.email))
   if (await db.getUserByEmail(req.body.email) == null) {
     let userId = genId()
     let salt = 10
     bcrypt.hash(req.body.password, salt, async (err, hash) => {
       if (hash) {
-        let user = await db.addUser(req.body.email, userId, hash)
+        let user = await db.addUser(req.body.email, userId, hash, req.body.username)
         req.login(user, (err) => {
           if (err) {
             res.status(500).json({ message: 'Database save error.', loggedIn: false })
@@ -112,7 +131,7 @@ app.post('/signup', async (req, res) => {
           }
         })
       } else {
-        res.status(500).json({message: 'Could not save password.'})
+        res.status(500).json({ message: 'Could not save password.' })
         return
       }
     })
