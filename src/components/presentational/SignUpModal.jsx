@@ -96,7 +96,7 @@ class SignUpModal extends Component {
 function parseInput (parseData) {
   let data  = {}
   let errors = {}
-  let eReg =  /\S+@\S+\.\S+/
+  let eReg =  /[^\S+@\S+$]/
   let uReg = /[^a-zA-Z0-]/
   parseData.forEach((v, k) => {
     if (!v) {
