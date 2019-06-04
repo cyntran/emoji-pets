@@ -47,7 +47,7 @@ class Profile extends Component {
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
         <button id="home-btn" onClick={() => this.nextPath('/')}>Dashboard</button>
         { this.state.user && showUser(this.state.user) } <br />
-        <p id='user-pets'>Pets</p> <hr id='pets-hr'/>
+        <p class='user-items-tag'>Pets </p> <hr id='pets-hr'/>
         { this.state.user && showPets(this.state.user) }
       </div>
     )
