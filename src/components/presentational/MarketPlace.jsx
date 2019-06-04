@@ -45,6 +45,8 @@ class MarketPlace extends Component {
   render () {
     return (
       <div className= "market-container">
+        { !displayMenu(this.state.displayMenu) && <button id='wallet-amt-btn'>Coins:
+          {this.state.user.balance}</button> }
         <label id='search-lbl'>Find a friend:
           <input id='search-box' placeholder='Enter username' name='search-user' onKeyPress={this.handleSearch}>
           </input>
