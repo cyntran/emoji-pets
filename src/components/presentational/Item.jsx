@@ -68,7 +68,7 @@ class Item extends Component {
         <p>Price: {this.state.price} coins</p>
         <button id='buy-btn' name={this.state.name}
           onClick={() => this.handleBuy()}>
-          {animalOrItem(this.state.item.unicode)}</button>
+          { animalOrItem(this.state.item.unicode) }</button>
         { !this.state.signedIn && <div id='login-buy'>{emojiHand} Please log in to purchase.</div> }
         { this.state.showModal && <PetForm handleModal={this.checkClose} name={this.state.name} item={this.state.item}/> }
       </div>
