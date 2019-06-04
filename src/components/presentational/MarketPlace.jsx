@@ -2,7 +2,6 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Item from "./Item.jsx"
 import Menu from "./Menu.jsx"
-// import Modal from "./Modal.jsx"
 
 class MarketPlace extends Component {
   constructor () {
@@ -12,6 +11,7 @@ class MarketPlace extends Component {
       user: false,
       displayMenu: false,
     }
+    this.handleSearch = this.handleSearch.bind(this)
   }
   componentDidMount () {
     getForSale().then((val) => {
@@ -30,18 +30,30 @@ class MarketPlace extends Component {
       }
     })
   }
+
   nextPath (path) {
     this.props.history.push(path)
+  }
+
+  handleSearch (e) {
+    if (e.key == 'Enter') {
+      console.log(e.target.value)
+      this.nextPath(`/profile/${e.target.value}`)
+    }
   }
 
   render () {
     return (
       <div className= "market-container">
+        <label id='search-lbl'>Find a friend:
+          <input id='search-box' placeholder='Enter username' name='search-user' onKeyPress={this.handleSearch}>
+          </input>
+        </label><br /><br />
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
         { displayMenu(this.state.displayMenu) }
-        <button id="home-btn" onClick={() => this.nextPath('/')}>Profile</button>
+        <button id="home-btn" onClick={() => this.nextPath('/')}>Dashboard</button>
         <h1 id='market-text'>Welcome to the marketplace!</h1>
-        {parseItems(this.state.items)}
+        { parseItems(this.state.items) }
       </div>
     )
   }

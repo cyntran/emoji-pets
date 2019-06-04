@@ -13,7 +13,9 @@ class MainContainer extends Component {
       showSignIn: false,
       sellMsg: null
     }
+    this.handleSearch = this.handleSearch.bind(this)
   }
+
   componentDidMount() {
     getProfile()
       .then((res) => {
@@ -35,9 +37,20 @@ class MainContainer extends Component {
     this.props.history.push(path)
   }
 
+  handleSearch (e) {
+    if (e.key == 'Enter') {
+      console.log(e.target.value)
+      this.nextPath(`/profile/${e.target.value}`)
+    }
+  }
+
   render () {
     return (
       <div id='main-container'>
+        <label id='search-lbl'>Find a friend:
+          <input id='search-box' placeholder='Enter username' name='search-user' onKeyPress={this.handleSearch}>
+          </input>
+        </label><br /><br />
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
         { displayMenu(this.state.showSignIn) }
         <button id="adopt-btn" onClick={() => this.nextPath('/forsale')}>{!this.state.user.animal ? 'Adopt a pet!' : 'Browse the market!'}</button><br />
