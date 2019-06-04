@@ -88,18 +88,41 @@ async function getUserByEmail (email) {
   }
 }
 
-async function addUser (email, uId, passwordHash) {
+async function getUserByUsername (username) {
+  try {
+    let userId = await db.get(`user/username/${username}`)
+    return await getUserById (userId)
+  } catch (err) {
+    throw err
+  }
+}
+
+async function checkUsernameExists (username) {
+  try {
+    return await db.get(`user/username/${username}`)
+  } catch (err) {
+    if (!err.notFound) throw err
+    return false
+  }
+}
+
+async function addUser (email, uId, passwordHash, uName) {
+  console.log(email, uId, passwordHash, uName)
   try {
     let info = {
       id: uId,
+      username: uName,
       email: email,
       hash: passwordHash,
       balance: 10,
       pets: {},
       items: {}
     }
-    await db.put(`user/email/${email}`, uId)
-    await db.put(`user/${uId}`, info)
+    await db.batch()
+      .put(`user/email/${email}`, uId)
+      .put(`user/username/${uName}`, uId)
+      .put(`user/${uId}`, info)
+      .write(() => { console.log(`done batching`) })
     return info
   } catch (err) {
     throw err
@@ -273,6 +296,7 @@ module.exports = {
   getForSale,
   getUserById,
   getUserByEmail,
+  getUserByUsername,
   addUser,
   updateMarketItem,
   addUserItem,
