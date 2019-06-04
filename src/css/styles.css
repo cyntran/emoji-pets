@@ -110,6 +110,12 @@
   text-align: left;
 }
 
+.profile-container {
+  position: absolute;
+  width: 80%;
+  top: 100px;
+}
+
 button {
   padding: 2px 10px;
   border-style: none;
@@ -133,6 +139,7 @@ input {
 
 input:focus {
   background: #d7f4f1;
+  outline: none;
 }
 
 label {
@@ -145,12 +152,28 @@ label {
   height: 350px;
 }
 
+#search-box {
+  height: 20px;
+  width: 130px;
+  font-size: 1rem;
+  border-radius: 5px;
+  margin-left: 4px;
+}
+
+#search-lbl {
+  position: absolute;
+  font-size: 1.5rem;
+  z-index: 1000;
+  right: 50px;
+}
+
 #title {
+  margin-top: -5px;
   font-size: 5rem;
 }
 
 #market-text {
-  margin-top: 100px
+  margin-top: 50px
 }
 
 #adopt-btn {
@@ -158,6 +181,7 @@ label {
   color: white;
   font-size: 2rem;
   padding: 10px;
+  margin-top: 8px;
 }
 
 #buy-btn {
@@ -173,6 +197,7 @@ label {
   background-color: #3bba18;
   color: white;
   font-size: 2rem;
+  margin-top: 8px;
 }
 
 #wallet-group {
@@ -321,4 +346,32 @@ label {
   left: 0;
   right: 0;
   text-align: center;
+}
+
+#profile-name {
+  font-size: 2rem;
+}
+
+#pets-hr {
+  position: absolute;
+  width: 100%;
+  text-align: left;
+  border: 2px solid #c1c1c1;
+  border-radius: 3px;
+}
+
+#user-pets {
+  text-align: left;
+  font-size: 2rem;
+  margin-bottom: -10px;
+  margin-left: 10px;
+}
+
+#username-tag {
+  font-size: 2rem;
+  margin-bottom: -50px;
+}
+
+#fourohfour-error{
+  font-size: 4rem;
 }
