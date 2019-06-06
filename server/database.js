@@ -32,6 +32,11 @@ function printUsers () {
   })
 }
 
+// Gets a random integer between 10 and 100
+function getRandomInt() {
+  return Math.round(Math.random() * (95 - 10) + 10);
+}
+
 function addAllEmojis () {
   fs.readdir(imagePath, (err, file) => {
     file.forEach(async (image) => {
@@ -42,13 +47,24 @@ function addAllEmojis () {
       obj.unicode = unicode[0]
       if (forSale(unicode)) {
         obj.price = 10
-        obj.prevOwner = false
         if (isPetUnicode(unicode)) {
           obj.isAnimal = true
+          obj.quantity = 100;
+          obj.petData = {},
+          obj.petData.hunger = 0,
+          obj.petData.generation = 0,
+          obj.petData.intelligence = getRandomInt(),
+          obj.petData.charisma = getRandomInt(),
+          obj.petData.health = 100,
+          obj.petData.attractiveness = getRandomInt(),
+          obj.petData.age = 'baby',
+          obj.petData.bio = "I'm the cutest!",
+          obj.petData.prevOwner = false
         }
         await db.put(`emoji/forsale/${unicode[0]}`, obj)
       }
       await db.put(`emoji/${unicode[0]}`, obj)
+      await db.put(`admin/reserve`, { reserve: 0 })
     })
   })
   printData ()
@@ -107,14 +123,13 @@ async function checkUsernameExists (username) {
 }
 
 async function addUser (email, uId, passwordHash, uName) {
-  console.log(email, uId, passwordHash, uName)
   try {
     let info = {
       id: uId,
       username: uName,
       email: email,
       hash: passwordHash,
-      balance: 10,
+      balance: 100,
       pets: {},
       items: {}
     }
@@ -142,7 +157,6 @@ async function getItemForSale (id) {
 async function getType (id) {
   let pet = await isPetUnicode(id) ? 'pets' : 'food'
   if (pet) {
-    console.log(pet)
     return 'pets'
   }
   return 'food'
@@ -150,31 +164,74 @@ async function getType (id) {
 
 //TODO: Items should be unique and not stored with unicode
 async function addUserItem (id, name, info) {
-  console.log(`---addUserItem()--- id: ${id}, name: ${name}, info: ${JSON.stringify(info)}`)
+  let updatedUserObj = {}
+  console.log(`---addUserItem()--- id: ${id},\nname: ${name},\ninfo: ${JSON.stringify(info, null, 2)}`)
   try {
     let userInfo = await getUserById(id)
-    let petBio = info.bio
 
-    console.log('info.prevOwner', info.prevOwner)
-    if (!info.prevOwner) {
+    userInfo.balance -= info.price
+
+    if (userInfo.balance < 0) {
+      return false
+    }
+
+    if (info.quantity < 1 && !info.petData.prevOwner) {
       await db.del(`emoji/forsale/${info.unicode}`)
     } else {
-      await db.del(`emoji/forsale/${name}`)
+      if (info.petData.prevOwner) {
+        await db.del(`emoji/forsale/${name}`)
+      }
+
+      if (info.quantity) {
+        let newQuan = info.quantity - 1
+        console.log(`user info new ${userInfo}`)
+
+        info.petData.intelligence = getRandomInt(),
+        info.petData.charisma = getRandomInt(),
+        info.petData.health = 100,
+        info.petData.attractiveness = getRandomInt(),
+        info.price = 10;
+
+        db.put(`emoji/forsale/${info.unicode}`, Object.assign({}, info, { name: info.unicode, quantity: newQuan }), async(err) => {
+          if (err) {
+            throw err
+          } else {
+            console.log('success, item quantity changed')
+            let updatedItem = await db.get(`emoji/forsale/${info.unicode}`)
+            console.log('updatedItem', updatedItem)
+          }
+        })
+      }
     }
 
     userInfo.pets = userInfo.pets || {}
 
-    let updatedPetInfo = {
-      name: name,
-      unicode: info.unicode,
-      path: info.path,
-      isAnimal: true,
-      age: 'baby',
-      bio: info.bio,
+    let updatedPetData  = {
+      hunger: info.petData.hunger,
+      generation: 0,
+      intelligence: info.petData.intelligence,
+      charisma: info.petData.charisma,
+      health: info.petData.health,
+      attractiveness: info.petData.attractiveness,
+      age: info.petData.age,
+      bio: info.petData.bio,
       prevOwner: true
     }
 
-    userInfo.pets[name] = updatedPetInfo
+    let updatedPet = {
+      name: name,
+      price: 5,
+      unicode: info.unicode,
+      path: info.path,
+      isAnimal: true,
+      petData: updatedPetData
+    }
+
+    userInfo.pets[name] = updatedPet
+
+    console.log('new userInfo', userInfo)
+
+    updatedUserObj = userInfo
 
     console.log(`pets object being stored into user: ${userInfo.pets[name]}`)
     db.put(`user/${id}`, userInfo, async (err) => {
@@ -182,12 +239,12 @@ async function addUserItem (id, name, info) {
         throw err
       } else {
         console.log('success, item added')
-        return await db.get(`user/${id}`)
       }
     })
   } catch (err) {
     throw err
   }
+  return updatedUserObj
 }
 
 // Right not, removing an item is only removing a given pet by name.
@@ -196,10 +253,27 @@ async function removeUserItem (id, item, info) {
   try {
     let userInfo = await getUserById(id)
     let type = 'pets'
-    console.log(`deleting ${JSON.stringify(userInfo[type][item], null, 2)}`)
     delete userInfo[type][item]
 
-    console.log(`new user object after deleting item: ${userInfo}`)
+    let price = info.price
+
+    console.log('item', item)
+    console.log('price', price)
+
+    userInfo.balance = userInfo.balance + 5
+
+    console.log('users new balance', userInfo.balance)
+
+    let admin = await db.get(`admin/reserve`)
+    let reserve = admin.reserve + 5
+
+    db.put(`admin/reserve`, { reserve: reserve }, (err) => {
+      if (err) {
+        console.log(err)
+      }
+    })
+
+    console.log(await db.get(`admin/reserve`))
 
     db.put(`user/${id}`, userInfo, async (err) => {
       if (err) {
@@ -208,13 +282,19 @@ async function removeUserItem (id, item, info) {
     })
 
     await db.put(`emoji/forsale/${item}`, info)
-    console.log('success, item removed')
 
     return await db.get(`user/${id}`)
   } catch (err) {
     throw err
   }
 }
+
+
+async function getPetFromUser (user, pet) {
+  let owner = await getUserByUsername(user)
+  return owner.pets[pet] == null ? false : owner.pets[pet]
+}
+
 
 function forSale (unicode) {
   let min = parseInt('1f400', 16)
@@ -297,6 +377,7 @@ module.exports = {
   getUserById,
   getUserByEmail,
   getUserByUsername,
+  getPetFromUser,
   addUser,
   updateMarketItem,
   addUserItem,
