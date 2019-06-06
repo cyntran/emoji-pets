@@ -14,9 +14,15 @@ class MainContainer extends Component {
       sellMsg: null
     }
     this.handleSearch = this.handleSearch.bind(this)
+    this.handleScroll = this.handleScroll.bind(this)
   }
 
   componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll)
+    let scrollPs = localStorage.getItem('scrollY')
+    if (scrollPs) {
+      setTimeout(() => window.scrollTo(0, scrollPs), 200)
+    }
     getProfile()
       .then((res) => {
       if (res.message) {
@@ -33,15 +39,24 @@ class MainContainer extends Component {
     })
   }
 
+  componentWillMount() {
+    window.removeEventListener('scroll', this.handleScroll)
+  }
+
   nextPath(path) {
     this.props.history.push(path)
   }
 
   handleSearch (e) {
     if (e.key == 'Enter') {
-      console.log(e.target.value)
       this.nextPath(`/profile/${e.target.value}`)
     }
+  }
+
+  handleScroll () {
+    let winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    let height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+    window.localStorage.setItem('scrollY', winScroll)
   }
 
   render () {
@@ -84,6 +99,7 @@ function handleSell (petName, info) {
 
 function displayMenu(display) {
   if (display) {
+    document.querySelector('#title').style.marginTop = '10px'
     return <Menu />
   }
 }
@@ -98,24 +114,29 @@ function showWallet (usrInfo) {
     <div id='wallet-group'>
       <h1 id='your-wallet'>{usrInfo.username}'s dashboard </h1>
       <button id='wallet-amt-btn'>Coins:{usrInfo.balance}</button>
-      <p class='user-items-tag'>Pets</p> <hr id='pets-hr'/>
+      <p className='user-items-tag'>Pets</p> <hr id='hr'/>
       {showPets(usrInfo)}
-      <p class='user-items-tag'>Items</p> <hr id='pets-hr'/>
+      <p className='user-items-tag'>Items</p> <hr id='hr'/>
     </div>
   )
 }
 
 function showPets (usrInfo) {
   let petNames = Object.keys(usrInfo.pets)
-  console.log(`user's pet's names: ${JSON.stringify(usrInfo.pets, null, 2)}`)
   return petNames.map((name, i) =>
-    <div className='pets-container' key={i}>
+    <div className='pets-container' key={i} onClick={() => goToPet(usrInfo.username, name)}>
+      <p className='see-bio-text'> click me! </p>
       <img src={usrInfo.pets[name].path} id='pet'/>
       <p id='pet-name'>{name}</p>
-      <p id='pet-age'>age: {usrInfo.pets[name].age}</p>
+      <p id='pet-health'>Health: {usrInfo.pets[name].petData.health}</p><br />
+      <p id='pet-age'>generation: {usrInfo.pets[name].petData.generation}</p>
       <button className='sell-btn' onClick={() => handleSell(name, usrInfo.pets[name])}> Sell </button>
     </div>
   )
+}
+
+function goToPet (username, petname) {
+  window.location.replace(`/pet/${username}/${petname}`)
 }
 
 async function getProfile () {
