@@ -4,6 +4,6 @@ if (process.env.NODE_ENV == 'dev') {
   }
 } else {
   module.exports = {
-    apiUrl: 'http://emojipet.com'
+    apiUrl: 'http://api.emojipet.com'
   }
 }
