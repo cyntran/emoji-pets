@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import PetForm from "./PetForm.jsx"
-import config from ".../clientConfig.js"
+import config from "../../../clientConfig.js"
 
 class Item extends Component {
   constructor (props) {

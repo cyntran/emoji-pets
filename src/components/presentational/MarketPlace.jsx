@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Item from "./Item.jsx"
 import Menu from "./Menu.jsx"
-import config from ".../clientConfig.js"
+import config from "../../../clientConfig.js"
 
 
 class MarketPlace extends Component {

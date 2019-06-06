@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import config from ".../clientConfig.js"
+import config from "../../../clientConfig.js"
 
 
 class Profile extends Component {

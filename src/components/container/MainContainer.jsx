@@ -2,8 +2,7 @@ import React, { Component } from "react"
 import ReactDOM from "react-dom"
 import Menu from "../presentational/Menu.jsx"
 import '../../css/styles.css'
-import config from ".../clientConfig.js"
-
+import config from "../../../clientConfig.js"
 
 class MainContainer extends Component {
   constructor () {

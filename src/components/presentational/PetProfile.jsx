@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import ProgressBar from "./ProgressBar.jsx"
-import config from ".../clientConfig.js"
+import config from "../../../clientConfig.js"
 
 
 class PetProfile extends Component {
