@@ -12,8 +12,14 @@ class MarketPlace extends Component {
       displayMenu: false,
     }
     this.handleSearch = this.handleSearch.bind(this)
+    this.handleScroll = this.handleScroll.bind(this)
   }
   componentDidMount () {
+    window.addEventListener('scroll', this.handleScroll)
+    let scrollPs = localStorage.getItem('scrollY')
+    if (scrollPs) {
+      setTimeout(() => window.scrollTo(0, scrollPs), 200)
+    }
     getForSale().then((val) => {
       if (!val.error) {
         this.setState({ items: val })
@@ -31,15 +37,23 @@ class MarketPlace extends Component {
     })
   }
 
+  componentWillMount() {
+    window.removeEventListener('scroll', this.handleScroll)
+  }
+
   nextPath (path) {
     this.props.history.push(path)
   }
 
   handleSearch (e) {
     if (e.key == 'Enter') {
-      console.log(e.target.value)
       this.nextPath(`/profile/${e.target.value}`)
     }
+  }
+  handleScroll () {
+    let winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    let height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+    window.localStorage.setItem('scrollY', winScroll)
   }
 
   render () {
@@ -63,6 +77,7 @@ class MarketPlace extends Component {
 
 function displayMenu (display) {
   if (display) {
+    document.querySelector('#title').style.marginTop = '10px'
     return <Menu />
   }
 }
