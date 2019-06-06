@@ -11,7 +11,8 @@ class PetForm extends Component {
       errors: false,
       charLimit: 0,
       onClose: this.props.handleModal,
-      showPurchasingDiv: false
+      showPurchasingDiv: false,
+      errorMsg: false
     }
     this.handleBioInput = this.handleBioInput.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -31,12 +32,16 @@ class PetForm extends Component {
     let parseData = new FormData(e.target)
     let data = parseInput(parseData)
     let postData = data.data
+    this.state.item.petData.bio = postData.bio
+    let itemData = this.state.item
 
-    let newPostData = Object.assign({}, postData, {
+    console.log(itemData)
+
+    let newPostData = Object.assign(itemData, postData, {
       path: this.state.item.path,
       unicode: this.state.item.unicode,
-      prevOwner: this.state.item.prevOwner,
-      isAnimal: this.state.item.isAnimal
+      isAnimal: this.state.item.isAnimal,
+      quantity: this.state.item.quantity
     })
     console.log('newPostData', newPostData)
 
@@ -49,9 +54,26 @@ class PetForm extends Component {
         showPurchasingDiv: true,
       })
 
-      setTimeout(() => window.location.reload(), 1000)
+      let timeout = setTimeout(() => window.location.reload(), 1000)
 
-      buy(newPostData, this.state.name)
+      fetch('http://localhost:8080/item/buy', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: (!newPostData.name) ? this.state.name : newPostData.name,
+          info: newPostData
+        }),
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        if (!res.ok) {
+          this.setState({ errorMsg: true, showPurchasingDiv: false})
+          clearTimeout(timeout)
+          setTimeout(() => window.location.reload(), 2000)
+        }
+      })
     }
   }
 
@@ -59,6 +81,8 @@ class PetForm extends Component {
     return (
       <div className='pet-form-container'>
         <h1 id='pet-form-title'>Adoption Form</h1>
+        { this.state.errorMsg && <div id='login-buy'> Sorry, you do not have enough funds. </div> }
+
         {this.state.showPurchasingDiv && <div id='purchasing-div'>Purchasing! Please wait...</div>}
         <form onSubmit={this.handleSubmit}>
           <label className='pet-form-labels'>Pet Name:
@@ -79,20 +103,6 @@ class PetForm extends Component {
   }
 }
 
-
-async function buy (info, stateName) {
-  fetch('http://localhost:8080/item/buy', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: (!info.name) ? stateName : info.name,
-      info: info
-    }),
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-}
 
 // helper functions below
 function parseInput (parseData) {
