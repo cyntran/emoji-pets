@@ -2,6 +2,8 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Item from "./Item.jsx"
 import Menu from "./Menu.jsx"
+import config from ".../clientConfig.js"
+
 
 class MarketPlace extends Component {
   constructor () {
@@ -96,7 +98,7 @@ function parseItems (items) {
 }
 
 async function getUser () {
-  let response = await fetch(`http://localhost:8080/profile`, { credentials: 'include' })
+  let response = await fetch(`${config.apiUrl}/profile`, { credentials: 'include' })
   if (response.ok) {
     return response.json()
   } else {
@@ -107,7 +109,7 @@ async function getUser () {
 }
 
 async function getForSale () {
-  let response = await fetch(`http://localhost:8080/forsale`, { credentials: 'include' })
+  let response = await fetch(`${config.apiUrl}/forsale`, { credentials: 'include' })
   let data = await response.json()
   return data
 }

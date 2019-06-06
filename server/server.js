@@ -73,7 +73,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 let allowedOrigins = [
-  'http://localhost:8081'
+  'http://localhost:8081',
+  'http://emojipet.com'
 ]
 
 app.use((req, res, next) => {
@@ -233,9 +234,15 @@ app.get('/forsale/item/:id', async (req, res) => {
   res.status(200).json(item)
 })
 
-app.listen(8080, () => {
-  console.log('Listening on localhost:8080')
-})
+if (process.env.NODE_ENV === 'dev') {
+  app.listen(8080, () => {
+    console.log('Listening on localhost:8080')
+  })
+} else {
+  app.listen(80, () => {
+    console.log('Listening on emojipet.com')
+  })
+}
 
 // Helper functions
 function genId () {

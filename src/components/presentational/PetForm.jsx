@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
+import config from ".../clientConfig.js"
 
 
 class PetForm extends Component {
@@ -56,7 +57,7 @@ class PetForm extends Component {
 
       let timeout = setTimeout(() => window.location.reload(), 1000)
 
-      fetch('http://localhost:8080/item/buy', {
+      fetch(`${config.apiUrl}/item/buy`, {
         method: 'POST',
         body: JSON.stringify({
           name: (!newPostData.name) ? this.state.name : newPostData.name,

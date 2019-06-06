@@ -1,5 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
+import config from ".../clientConfig.js"
+
 
 class SignInModal extends Component {
   constructor(props) {
@@ -29,7 +31,7 @@ class SignInModal extends Component {
         return
       }
 
-      fetch('http://localhost:8080/login', {
+      fetch(`${config.apiUrl}/login`, {
         method: 'POST',
         body: JSON.stringify(postData),
         credentials: 'include',

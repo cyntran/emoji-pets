@@ -2,6 +2,8 @@ import React, { Component } from "react"
 import ReactDOM from "react-dom"
 import Menu from "../presentational/Menu.jsx"
 import '../../css/styles.css'
+import config from ".../clientConfig.js"
+
 
 class MainContainer extends Component {
   constructor () {
@@ -79,7 +81,7 @@ class MainContainer extends Component {
 }
 
 function handleSell (petName, info) {
-  fetch(`http://localhost:8080/item/sell`, {
+  fetch(`${config.apiUrl}/item/sell`, {
     method: 'POST',
     body: JSON.stringify({ name: petName, info: info }),
     credentials: 'include',
@@ -105,7 +107,7 @@ function displayMenu(display) {
 }
 
 function logout() {
-  fetch('http://localhost:8080/signout', { credentials: 'include' })
+  fetch(`${config.apiUrl}/signout`, { credentials: 'include' })
     .then(window.location.replace('/'))
 }
 
@@ -140,7 +142,7 @@ function goToPet (username, petname) {
 }
 
 async function getProfile () {
-  let response = await fetch(`http://localhost:8080/profile`, { credentials: 'include' })
+  let response = await fetch(`${config.apiUrl}/profile`, { credentials: 'include' })
   if (response.ok) {
     let data = await response.json()
     return data
@@ -154,7 +156,7 @@ async function getProfile () {
 }
 
 async function getAnimal (unicode) {
-  let response = await fetch(`http://localhost:8080/item/${unicode}`, { credentials: 'include' })
+  let response = await fetch(`${config.apiUrl}/item/${unicode}`, { credentials: 'include' })
   let data = await response.json()
   return data.path
 }

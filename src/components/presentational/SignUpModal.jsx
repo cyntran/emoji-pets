@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
+import config from ".../clientConfig.js"
 
 
 class SignUpModal extends Component {
@@ -30,7 +31,7 @@ class SignUpModal extends Component {
         return
       }
 
-      fetch('http://localhost:8080/signup', {
+      fetch(`${config.apiUrl}/signup`, {
         method: 'POST',
         body: JSON.stringify(postData),
         credentials: 'include',

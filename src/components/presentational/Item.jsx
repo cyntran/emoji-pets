@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import PetForm from "./PetForm.jsx"
+import config from ".../clientConfig.js"
 
 class Item extends Component {
   constructor (props) {
@@ -19,7 +20,7 @@ class Item extends Component {
   }
 
   handleBuy () {
-    fetch('http://localhost:8080/profile', { credentials: 'include' })
+    fetch(`${config.apiUrl}/profile`, { credentials: 'include' })
     .then((res) => {
       if (res.ok) {
         this.setState({ signedIn: true })
@@ -31,7 +32,7 @@ class Item extends Component {
             this.setState({ showModal: true })
             return
           } else {
-            fetch(`http://localhost:8080/item/buy`, {
+            fetch(`${config.apiUrl}/item/buy`, {
               method: 'POST',
               body: JSON.stringify({ name: this.state.name, info: this.state.item}),
               credentials: 'include',

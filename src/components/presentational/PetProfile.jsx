@@ -1,5 +1,7 @@
 import React, { Component } from "react"
 import ProgressBar from "./ProgressBar.jsx"
+import config from ".../clientConfig.js"
+
 
 class PetProfile extends Component {
   constructor (props) {
@@ -13,7 +15,7 @@ class PetProfile extends Component {
 
   componentDidMount () {
     const { username, petname } = this.state
-    fetch(`http://localhost:8080/pet/${username}/${petname}`)
+    fetch(`${config.apiUrl}/pet/${username}/${petname}`)
     .then(res => res.json())
     .then(pet => { this.setState({ pet: pet }) })
   }

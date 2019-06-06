@@ -1,4 +1,6 @@
 import React, { Component } from "react"
+import config from ".../clientConfig.js"
+
 
 class Profile extends Component {
   constructor () {
@@ -11,7 +13,7 @@ class Profile extends Component {
 
   componentDidMount () {
     let { username } = this.props.match.params
-    fetch (`http://localhost:8080/profile/${username}`, { credentials: 'include' })
+    fetch (`${config.apiUrl}/profile/${username}`, { credentials: 'include' })
     .then(res => res.json())
     .then((user) => {
       if (user.message) {
