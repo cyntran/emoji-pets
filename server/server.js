@@ -86,16 +86,19 @@ app.use((req, res, next) => {
 })
 
 
+//TODO: only return the profile data you need.
 app.get('/profile/:username', async (req, res) => {
-  console.log(req.params.username)
   if (!req.user) {
-    console.log('oops no user')
     res.status(500).json({ message: 'You must logged in to see this profile. '})
     return
   }
   try {
     let user = await db.getUserByUsername(req.params.username)
-    res.status(200).json(user)
+    let userInfo = {
+      username: user.username,
+      pets: user.pets
+    }
+    res.status(200).json(userInfo)
   } catch (err) {
     console.log(err)
     res.status(404).json({ message: 'User not found.' })
@@ -103,16 +106,22 @@ app.get('/profile/:username', async (req, res) => {
 })
 
 
-//TODO: merge this into the one above
+app.get('/pet/:username/:petname', async (req, res) => {
+  let pet = await db.getPetFromUser(req.params.username, req.params.petname)
+  res.status(200).json(pet)
+})
+
+
 app.get('/profile', async (req, res) => {
   if (!req.user) {
     res.status(500).json({ error: 'User not logged in.' })
     return
   }
   let user = await db.getUserById(req.user.id)
-  console.log(user)
+  console.log(JSON.stringify(user, null, 3))
   res.status(200).json(user)
 })
+
 
 app.post('/signup', async (req, res) => {
   if (await db.getUserByEmail(req.body.email) == null) {
@@ -170,20 +179,20 @@ app.get('/item/:id', async (req, res) => {
 
 // TODO: update user balance as well...
 // Handle errors.
-app.post('/item/buy', async (req, res) => {
+app.post('/item/buy', (req, res) => {
   if (!req.user) {
     res.status(500).json({ unauthorized: 'You are not signed in! '})
   }
   console.log(`-------/item/buy NAME------- ${req.body.name}`)
 
-  await db.addUserItem(req.user.id, req.body.name, req.body.info)
+  db.addUserItem(req.user.id, req.body.name, req.body.info)
   .then((userInfo) => {
+    console.log('userinfo', userInfo)
+    if (!userInfo) {
+      res.status(500).json({ message: 'Not enough funds' })
+      return
+    }
     res.status(200).json(userInfo)
-    return
-  })
-  .catch(err => {
-    console.log(err)
-    res.status(500).json({ message: 'Sorry -- could not buy.' })
     return
   })
 })
