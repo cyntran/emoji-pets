@@ -13,9 +13,9 @@ class Item extends Component {
       item: this.props.item,
       signedIn: true,
       showModal: false,
-      showPurchasingDiv: false
+      showPurchasingDiv: false,
+      errorMsg: false
     }
-    console.log(`Item state object: ${JSON.stringify(this.state, null, 2)}`)
   }
 
   handleBuy () {
@@ -23,24 +23,30 @@ class Item extends Component {
     .then((res) => {
       if (res.ok) {
         this.setState({ signedIn: true })
+        console.log('this.state.name', this.state.name)
         fetch(`http://localhost:8080/forsale/item/${this.state.name}`)
         .then(res => res.json())
         .then(data => {
-          console.log(data)
-          if (!data.prevOwner && data.isAnimal) {
+          if (!data.petData.prevOwner && data.isAnimal) {
             this.setState({ showModal: true })
             return
           } else {
-            this.setState({
-              showPurchasingDiv: true
-            })
-            setTimeout(() => window.location.reload(), 1000)
             fetch(`http://localhost:8080/item/buy`, {
               method: 'POST',
               body: JSON.stringify({ name: this.state.name, info: this.state.item}),
               credentials: 'include',
               headers: {
                 'Content-Type': 'application/json'
+              }
+            }).then(res => {
+              if (!res.ok) {
+                this.setState({ errorMsg: true })
+                setTimeout(() => window.location.reload(), 2000)
+              } else {
+                this.setState({
+                  showPurchasingDiv: true
+                })
+                setTimeout(() => window.location.reload(), 1000)
               }
             })
           }
@@ -65,11 +71,14 @@ class Item extends Component {
       <div className='item-container'>
         {this.state.showPurchasingDiv && <div id='purchasing-div'>Purchasing, please wait.</div>}
         <img src={this.state.item.path} name={this.state.name}/>
-        <p>Price: {this.state.price} coins</p>
+        <p className='item-description'>Price: {this.state.price} coins</p>
+        { this.state.item.petData.prevOwner && <p className='item-description'>Name: {this.state.item.name}</p> }
+        {this.state.item.quantity && <p className='item-description'>Quantity: {this.state.item.quantity}</p>}
         <button id='buy-btn' name={this.state.name}
           onClick={() => this.handleBuy()}>
-          { animalOrItem(this.state.item.unicode) }</button>
+          { animalOrItem(this.state.item) }</button>
         { !this.state.signedIn && <div id='login-buy'>{emojiHand} Please log in to purchase.</div> }
+        { this.state.errorMsg && <div id='login-buy'> Sorry, you do not have enough funds. </div> }
         { this.state.showModal && <PetForm handleModal={this.checkClose} name={this.state.name} item={this.state.item}/> }
       </div>
     )
@@ -77,11 +86,8 @@ class Item extends Component {
 }
 
 
-function animalOrItem (id) {
-  let petMin = parseInt('1f400', 16)
-  let petMax = petMin + 25
-  let emojiId = parseInt(id, 16)
-  return (petMin <= emojiId && emojiId <= petMax) ? 'adopt' : 'buy'
+function animalOrItem (item) {
+  return (item.isAnimal) ? 'adopt' : 'buy'
 }
 
 export default Item
