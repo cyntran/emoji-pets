@@ -47,7 +47,7 @@ class Profile extends Component {
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
         <button id="home-btn" onClick={() => this.nextPath('/')}>Dashboard</button>
         { this.state.user && showUser(this.state.user) } <br />
-        <p class='user-items-tag'>Pets </p> <hr id='pets-hr'/>
+        <p className='user-items-tag'>Pets </p> <hr id='hr'/>
         { this.state.user && showPets(this.state.user) }
       </div>
     )
@@ -64,13 +64,17 @@ function showUser (userInfo) {
   )
 }
 
+function goToPet (username, petname) {
+  window.location.replace(`/pet/${username}/${petname}`)
+}
+
 function showPets (usrInfo) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='pets-container' key={i}>
+    <div className='pets-container' key={i} onClick={() => goToPet(usrInfo.username, name)}>
       <img src={usrInfo.pets[name].path} id='pet'/>
       <p id='pet-name'>{name}</p>
-      <p id='pet-age'>age: {usrInfo.pets[name].age}</p>
+      <p id='pet-age'>age: {usrInfo.pets[name].petData.age}</p>
     </div>
   )
 }
