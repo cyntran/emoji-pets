@@ -39,7 +39,7 @@ class MarketPlace extends Component {
     })
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll)
   }
 
@@ -52,6 +52,7 @@ class MarketPlace extends Component {
       this.nextPath(`/profile/${e.target.value}`)
     }
   }
+
   handleScroll () {
     let winScroll = document.body.scrollTop || document.documentElement.scrollTop
     let height = document.documentElement.scrollHeight - document.documentElement.clientHeight

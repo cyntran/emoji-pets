@@ -20,17 +20,13 @@ class PetProfile extends Component {
     .then(pet => { this.setState({ pet: pet }) })
   }
 
-  nextPath(path) {
-    this.props.history.push(path)
-  }
-
   render () {
     const { pet } = this.state
     const { path } = pet
     if (pet) {
     return (
         <div className='pet-profile-container'>
-          <button id='pet-home-btn' onClick={() => this.nextPath('/')}>Back</button>
+          <button id='pet-home-btn' onClick={() => this.props.history.goBack()}>Back</button>
           <h1 id='title'> Emoji <img id='heart-title' src='/images/emoji-svg/2764.svg'/> Pets </h1>
           <img id='pet-img-profile' src={'/' + path} />
           <h1 id='pet-name-profile'><u>{pet.name}</u></h1>
@@ -53,7 +49,7 @@ class PetProfile extends Component {
     if (!pet) {
       return (
         <div>
-          <button id='pet-home-btn' onClick={() => this.nextPath('/')}>Back</button>
+          <button id='pet-home-btn' onClick={() => this.props.history.goBack()}>Back</button>
           <h1 id='title'> Emoji <img id='heart-title' src='/images/emoji-svg/2764.svg'/> Pets </h1>
           <h1 id='aww-poop'>Aww</h1><img id='poop-emoji' src='/images/emoji-svg/1f4a9.svg' /> <br />
           <p id='bad-link-msg'>Bad link! Please go back and try again!</p>

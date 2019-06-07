@@ -9,9 +9,15 @@ class Profile extends Component {
       user: null,
       error: {}
     }
+    this.handleScroll = this.handleScroll.bind(this)
   }
 
   componentDidMount () {
+    window.addEventListener('scroll', this.handleScroll)
+    let scrollPs = localStorage.getItem('scrollY')
+    if (scrollPs) {
+      setTimeout(() => window.scrollTo(0, scrollPs), 200)
+    }
     let { username } = this.props.match.params
     fetch (`${config.apiUrl}/profile/${username}`, { credentials: 'include' })
     .then(res => res.json())
@@ -28,29 +34,34 @@ class Profile extends Component {
     })
   }
 
-  nextPath (path) {
-    this.props.history.push(path)
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll)
   }
 
+  handleScroll () {
+    let winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    let height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+    window.localStorage.setItem('scrollY', winScroll)
+  }
 
   render () {
     if (!isEmpty(this.state.error)) {
       return (
         <div>
           <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
-          <button id="home-btn" onClick={() => this.nextPath('/')}>Dashboard</button>
+          <button id="home-btn" onClick={() => this.props.history.go(-1)}>Back</button>
           <h1 id='fourohfour-error'>404</h1>
-          <h1 id="profile-name"> Oops! User not found! <br /> Click Dashboard to go home.</h1>
+          <h1 id="profile-name"> Oops! User not found! <br /> Click Back to go back.</h1>
         </div>
       )
     }
     return (
       <div className='profile-container'>
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
-        <button id="home-btn" onClick={() => this.nextPath('/')}>Dashboard</button>
+        <button id="home-btn" onClick={() => this.props.history.go(-1)}>Back</button>
         { this.state.user && showUser(this.state.user) } <br />
         <p className='user-items-tag'>Pets </p> <hr id='hr'/>
-        { this.state.user && showPets(this.state.user) }
+        { this.state.user && showPets(this.state.user, this.props.history) }
       </div>
     )
   }
@@ -66,14 +77,14 @@ function showUser (userInfo) {
   )
 }
 
-function goToPet (username, petname) {
-  window.location.replace(`/pet/${username}/${petname}`)
+function goToPet (username, petname, routeHistory) {
+  routeHistory.push(`/pet/${username}/${petname}`)
 }
 
-function showPets (usrInfo) {
+function showPets (usrInfo, routeHistory) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='pets-container' key={i} onClick={() => goToPet(usrInfo.username, name)}>
+    <div className='pets-container' key={i} onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
       <img src={usrInfo.pets[name].path} id='pet'/>
       <p id='pet-name'>{name}</p>
       <p id='pet-age'>age: {usrInfo.pets[name].petData.age}</p>

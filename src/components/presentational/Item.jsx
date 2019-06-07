@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import PetForm from "./PetForm.jsx"
 import config from "../../../clientConfig.js"
+import { withRouter } from 'react-router-dom'
 
 class Item extends Component {
   constructor (props) {
@@ -17,6 +18,10 @@ class Item extends Component {
       showPurchasingDiv: false,
       errorMsg: false
     }
+  }
+
+  nextPath (path) {
+    this.props.history.push(path)
   }
 
   handleBuy () {
@@ -39,16 +44,21 @@ class Item extends Component {
               headers: {
                 'Content-Type': 'application/json'
               }
-            }).then(res => {
+            })
+            .then(res => {
               if (!res.ok) {
                 this.setState({ errorMsg: true })
                 setTimeout(() => window.location.reload(), 2000)
+                return
               } else {
                 this.setState({
                   showPurchasingDiv: true
-                })
-                setTimeout(() => window.location.reload(), 1000)
+              })
+              return res.json()
               }
+            })
+            .then(user => {
+              setTimeout(() =>  this.nextPath(`/pet/${user.username}/${this.state.name}`), 1000)
             })
           }
         })
@@ -91,4 +101,4 @@ function animalOrItem (item) {
   return (item.isAnimal) ? 'adopt' : 'buy'
 }
 
-export default Item
+export default withRouter(Item)

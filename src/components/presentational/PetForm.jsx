@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import config from "../../../clientConfig.js"
-
+import { withRouter } from 'react-router-dom'
 
 class PetForm extends Component {
   constructor (props) {
@@ -20,12 +20,16 @@ class PetForm extends Component {
     console.log('this.state.name', this.state.name)
   }
 
+  nextPath (path) {
+    this.props.history.push(path)
+  }
 
   handleBioInput (e) {
     this.setState({
       charLimit: e.target.value.length
     })
   }
+
 
   handleSubmit (e) {
     e.preventDefault()
@@ -78,7 +82,7 @@ class PetForm extends Component {
       })
       .then((userInfo) => {
         console.log(`${JSON.stringify(userInfo, null, 2)}: userInfo`)
-        setTimeout(() =>  window.location.replace(`/pet/${userInfo.username}/${petName}`), 1000)
+        setTimeout(() => this.nextPath(`/pet/${userInfo.username}/${petName}`), 1000)
       })
     }
   }
@@ -144,4 +148,4 @@ function isEmpty (obj) {
   return Object.keys(obj).length === 0 && obj.constructor === Object
 }
 
-export default PetForm
+export default withRouter(PetForm)

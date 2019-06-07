@@ -40,7 +40,7 @@ class MainContainer extends Component {
     })
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll)
   }
 
@@ -71,7 +71,7 @@ class MainContainer extends Component {
         { displayMenu(this.state.showSignIn) }
         <button id="adopt-btn" onClick={() => this.nextPath('/forsale')}>{!this.state.user.animal ? 'Adopt a pet!' : 'Browse the market!'}</button><br />
         { this.state.user && <button id='sign-out-btn' onClick={() => logout()}>Log out</button> }
-        { this.state.user && showWallet(this.state.user)}
+        { this.state.user && showWallet(this.state.user, this.props.history)}
         { this.state.cuteDuck && <img id='cute-duck-img' src={this.state.cuteDuck}/> } <br />
         { this.state.msg && <h1 id='login-msg'>{this.state.msg}</h1> }
       </div>
@@ -110,23 +110,23 @@ function logout() {
     .then(window.location.replace('/'))
 }
 
-function showWallet (usrInfo) {
+function showWallet (usrInfo, routeHistory) {
   return (
     <div id='wallet-group'>
       <h1 id='your-wallet'>{usrInfo.username}'s dashboard </h1>
       <button id='wallet-amt-btn'>Coins:{usrInfo.balance}</button>
       <p className='user-items-tag'>Pets</p> <hr id='hr'/>
-      {showPets(usrInfo)}
+      {showPets(usrInfo, routeHistory)}
       <p className='user-items-tag'>Items</p> <hr id='hr'/>
     </div>
   )
 }
 
-function showPets (usrInfo) {
+function showPets (usrInfo, routeHistory) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
     <div className='pets-container' key={i}>
-      <div onClick={() => goToPet(usrInfo.username, name)}>
+      <div onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
         <p className='see-bio-text'> click me! </p>
         <img src={usrInfo.pets[name].path} id='pet'/>
         <p id='pet-name'>{name}</p>
@@ -138,8 +138,8 @@ function showPets (usrInfo) {
   )
 }
 
-function goToPet (username, petname) {
-  window.location.replace(`/pet/${username}/${petname}`)
+function goToPet (username, petname, routeHistory) {
+  routeHistory.push(`/pet/${username}/${petname}`)
 }
 
 async function getProfile () {
