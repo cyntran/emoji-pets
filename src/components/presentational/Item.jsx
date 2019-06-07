@@ -25,7 +25,7 @@ class Item extends Component {
       if (res.ok) {
         this.setState({ signedIn: true })
         console.log('this.state.name', this.state.name)
-        fetch(`http://localhost:8080/forsale/item/${this.state.name}`)
+        fetch(`${config.apiUrl}/forsale/item/${this.state.name}`)
         .then(res => res.json())
         .then(data => {
           if (!data.petData.prevOwner && data.isAnimal) {
