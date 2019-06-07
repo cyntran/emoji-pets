@@ -55,7 +55,7 @@ class PetForm extends Component {
         showPurchasingDiv: true,
       })
 
-      let timeout = setTimeout(() => window.location.reload(), 1000)
+      let petName = (!newPostData.name) ? this.state.name : newPostData.name
 
       fetch(`${config.apiUrl}/item/buy`, {
         method: 'POST',
@@ -71,9 +71,14 @@ class PetForm extends Component {
       .then(res => {
         if (!res.ok) {
           this.setState({ errorMsg: true, showPurchasingDiv: false})
-          clearTimeout(timeout)
           setTimeout(() => window.location.reload(), 2000)
+          return
         }
+        return res.json()
+      })
+      .then((userInfo) => {
+        console.log(`${JSON.stringify(userInfo, null, 2)}: userInfo`)
+        setTimeout(() =>  window.location.replace(`/pet/${userInfo.username}/${petName}`), 1000)
       })
     }
   }
@@ -114,12 +119,15 @@ function parseInput (parseData) {
       if (!v) {
         error = `*Required: Please enter your pet's name.`
       } else {
+        if (v.includes(' ')) {
+          error = `*Please enter a valid name.`
+        }
         data.name = v
       }
     }
     if (k === 'bio') {
       if (!v) {
-        data.bio = 'My pet is the sweetest.'
+        data.bio = 'My pet is the cutest!'
       } else {
         data.bio = v
       }
