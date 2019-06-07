@@ -125,12 +125,14 @@ function showWallet (usrInfo) {
 function showPets (usrInfo) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='pets-container' key={i} onClick={() => goToPet(usrInfo.username, name)}>
-      <p className='see-bio-text'> click me! </p>
-      <img src={usrInfo.pets[name].path} id='pet'/>
-      <p id='pet-name'>{name}</p>
-      <p id='pet-health'>Health: {usrInfo.pets[name].petData.health}</p><br />
-      <p id='pet-age'>generation: {usrInfo.pets[name].petData.generation}</p>
+    <div className='pets-container' key={i}>
+      <div onClick={() => goToPet(usrInfo.username, name)}>
+        <p className='see-bio-text'> click me! </p>
+        <img src={usrInfo.pets[name].path} id='pet'/>
+        <p id='pet-name'>{name}</p>
+        <p id='pet-health'>Health: {usrInfo.pets[name].petData.health}</p><br />
+        <p id='pet-age'>generation: {usrInfo.pets[name].petData.generation}</p>
+      </div>
       <button className='sell-btn' onClick={() => handleSell(name, usrInfo.pets[name])}> Sell </button>
     </div>
   )
