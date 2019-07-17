@@ -1,5 +1,7 @@
 let express = require('express')
-let db = require('./database.js')
+let level = require('level')
+let db = level('emoji', { valueEncoding: 'json' })
+let dbOp = require('./database.js')
 let session = require('express-session')
 let path = require('path')
 let uuid = require('uuid/v4')
@@ -18,24 +20,23 @@ passport.use(new LocalStrategy(
   { usernameField: 'email' },
   async (email, password, done) => {
    console.log('Inside local strategy callback')
-   let user = await db.getUserByEmail(email)
-   console.log('user', user)
-
-   if (!user) {
+   try {
+     let user = await dbOp.getUserByEmail(db, email)
+     bcrypt.compare(password, user.hash, (err, isMatch) => {
+       console.log('isMatch', isMatch)
+       if (err) {
+         done(err)
+       }
+       if (isMatch) {
+         return done(null, user)
+       } else {
+         return done(null, false, { message: 'Wrong password or email' })
+       }
+     })
+   } catch (err) {
+     if (!err.notFound) throw err
      return done(null, false, { message: 'Email not registered.' })
    }
-
-   bcrypt.compare(password, user.hash, (err, isMatch) => {
-     console.log('isMatch', isMatch)
-     if (err) {
-       done(err)
-     }
-     if (isMatch) {
-       return done(null, user)
-     } else {
-       return done(null, false, { message: 'Wrong password or email' })
-     }
-   })
   }
 ))
 
@@ -47,7 +48,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   console.log('Deserializing user and retrieving user')
-  const user = await db.getUserById(id)
+  const user = await dbOp.getUserById(db, id)
   const usrToRtn = user.id === id ? user : false
   done(null, usrToRtn)
 })
@@ -94,7 +95,7 @@ app.get('/profile/:username', async (req, res) => {
     return
   }
   try {
-    let user = await db.getUserByUsername(req.params.username)
+    let user = await dbOp.getUserByUsername(db, req.params.username)
     let userInfo = {
       username: user.username,
       pets: user.pets
@@ -108,7 +109,7 @@ app.get('/profile/:username', async (req, res) => {
 
 
 app.get('/pet/:username/:petname', async (req, res) => {
-  let pet = await db.getPetFromUser(req.params.username, req.params.petname)
+  let pet = await dbOp.getPetFromUser(db, req.params.username, req.params.petname)
   res.status(200).json(pet)
 })
 
@@ -118,19 +119,24 @@ app.get('/profile', async (req, res) => {
     res.status(500).json({ error: 'User not logged in.' })
     return
   }
-  let user = await db.getUserById(req.user.id)
-  console.log(JSON.stringify(user, null, 3))
+  let user = await dbOp.getUserById(db, req.user.id)
   res.status(200).json(user)
 })
 
 
 app.post('/signup', async (req, res) => {
-  if (await db.getUserByEmail(req.body.email) == null) {
+  try {
+    await dbOp.getUserByEmail(db, req.body.email)
+  } catch (err) {
+    if (!err.notFound) {
+      res.status(500).json({ message: 'Email already in use.'})
+      return
+    }
     let userId = genId()
     let salt = 10
     bcrypt.hash(req.body.password, salt, async (err, hash) => {
       if (hash) {
-        let user = await db.addUser(req.body.email, userId, hash, req.body.username)
+        let user = await dbOp.addUser(db, req.body.email, userId, hash, req.body.username)
         req.login(user, (err) => {
           if (err) {
             res.status(500).json({ message: 'Database save error.', loggedIn: false })
@@ -145,9 +151,6 @@ app.post('/signup', async (req, res) => {
         return
       }
     })
-  } else {
-    res.status(500).json({ message: 'Email already in use.'})
-    return
   }
 })
 
@@ -174,7 +177,7 @@ app.get('/signout' , (req, res) => {
 
 app.get('/item/:id', async (req, res) => {
   let unicode = req.params.id.toLowerCase()
-  let emoji = await db.getEmojiByUnicode(unicode, false)
+  let emoji = await dbOp.getEmojiByUnicode(db, unicode)
   res.status(200).json(emoji)
 })
 
@@ -186,7 +189,7 @@ app.post('/item/buy', (req, res) => {
   }
   console.log(`-------/item/buy NAME------- ${req.body.name}`)
 
-  db.addUserItem(req.user.id, req.body.name, req.body.info)
+  dbOp.addUserItem(db, req.user.id, req.body.buyData, req.body.item)
   .then((userInfo) => {
     console.log('userinfo', userInfo)
     if (!userInfo) {
@@ -205,7 +208,7 @@ app.post('/item/sell', (req, res) => {
   let name = req.body.name
   let info = req.body.info
   let userId = req.user.id
-  db.removeUserItem(userId, name, info)
+  dbOp.removeUserItem(db, userId, name, info)
   .then((userInfo) => {
     console.log(userInfo)
     res.status(200).send(userInfo)
@@ -219,14 +222,14 @@ app.post('/item/sell', (req, res) => {
 })
 
 setInterval(async () => {
-  forSale = await db.getForSale()}, 1000)
+  forSale = await dbOp.getForSale(db)}, 1000)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
 })
 
 app.get('/forsale/item/:id', async (req, res) => {
-  let item = await db.getItemForSale(req.params.id)
+  let item = await dbOp.getItemForSale(db, req.params.id)
   if (item.message) {
     res.status(500).json(item.message)
     return
