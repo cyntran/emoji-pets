@@ -1,0 +1,112 @@
+{
+  "username": "test",
+  "id": "JXV4B77XPI4NI",
+  "email": "test@test.com",
+  "hash": "$2b$10$n8Keo.QmjK3X7CJscpv2m.cnYqeD1LATDyU1np7vwmxIPbH0/XuGy",
+  "balance": 70,
+  "pets": {
+      "turdle": {
+        "price": 10,
+        "path": "../images/emoji-svg/1f422.svg",
+        "unicode": "1f422",
+        "isAnimal": true,
+        "petData": {
+          "hunger": 0,
+          "generation": 0,
+          "happiness": 100,
+          "intelligence": 84,
+          "charisma": 19,
+          "health": 100,
+          "attractiveness": 42,
+          "age": "baby",
+          "prevOwner": "JXV4B77XPI4NI"
+        },
+        "name": "turdle",
+        "bio": "i m green"
+      },
+      "bunny_wabbit": {
+        "price": 10,
+        "path": "../images/emoji-svg/1f407.svg",
+        "unicode": "1f407",
+        "isAnimal": true,
+        "petData": {
+          "hunger": 0,
+          "generation": 0,
+          "happiness": 100,
+          "intelligence": 69,
+          "charisma": 88,
+          "health": 100,
+          "attractiveness": 12,
+          "age": "baby",
+          "prevOwner": "JXV4B77XPI4NI"
+        },
+          "name": "bunny_wabbit",
+          "bio": "i am a widdle bunny"
+      },
+      "white-mousey": {
+        "price": 10,
+        "path": "../images/emoji-svg/1f401.svg",
+        "unicode": "1f401",
+        "isAnimal": true,
+        "petData": {
+          "hunger": 0,
+          "generation": 0,
+          "happiness": 100,
+          "intelligence": 36,
+          "charisma": 10,
+          "health": 100,
+          "attractiveness": 56,
+          "age": "baby",
+          "prevOwner": "JXV4B77XPI4NI"
+        },
+        "name": "white-mousey",
+        "bio": "My pet is the cutest!"
+      }
+    },
+    "items": {
+      "1f33d": {
+        "path": "../images/emoji-svg/1f33d.svg",
+        "unicode": "1f33d",
+        "price": 10,
+        "isAnimal": false,
+        "quantity": 2,
+        "category": "Food",
+        "product": "corn",
+        "isCrafted": false,
+        "seller": null
+      },
+      "1f345": {
+        "path": "../images/emoji-svg/1f345.svg",
+        "unicode": "1f345",
+        "price": 10,
+        "isAnimal": false,
+        "quantity": 2,
+        "category": "Food",
+        "product": "tomato",
+        "isCrafted": false,
+        "seller": null
+      },
+      "1f346": {
+        "path": "../images/emoji-svg/1f346.svg",
+        "unicode": "1f346",
+        "price": 10,
+        "isAnimal": false,
+        "quantity": 1,
+        "category": "Food",
+        "product": "egg plant",
+        "isCrafted": false,
+        "seller": null
+      },
+      "1f34c": {
+        "path": "../images/emoji-svg/1f34c.svg",
+        "unicode": "1f34c",
+        "price": 10,
+        "isAnimal": false,
+        "quantity": 1,
+        "category": "Food",
+        "product": "banana",
+        "isCrafted": false,
+        "seller": null
+      }
+    }
+}

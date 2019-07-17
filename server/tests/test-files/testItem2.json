@@ -1,0 +1,11 @@
+{
+  "path": "../images/emoji-svg/1f347.svg",
+  "unicode": "1f347",
+  "price": 10,
+  "isAnimal": false,
+  "quantity": 1,
+  "category": "Food",
+  "product": "grapes",
+  "isCrafted": false,
+  "seller": null
+}

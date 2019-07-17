@@ -1,0 +1,19 @@
+{
+  "price": 10,
+  "path": "../images/emoji-svg/1f402.svg",
+  "unicode": "1f402",
+  "isAnimal": true,
+  "petData": {
+    "hunger": 0,
+    "generation": 0,
+    "happiness": 100,
+    "intelligence": 87,
+    "charisma": 27,
+    "health": 100,
+    "attractiveness": 86,
+    "age": "baby",
+    "prevOwner": "JPK4B69XPI4TY"
+  },
+  "name": "testWithOwner",
+  "bio": "i used to have an owner."
+}

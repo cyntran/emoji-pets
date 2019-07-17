@@ -1,0 +1,11 @@
+{
+  "path": "../images/emoji-svg/1f34c.svg",
+  "unicode": "1f34c",
+  "price": 10,
+  "isAnimal": false,
+  "quantity": 100,
+  "category": "Food",
+  "product": "banana",
+  "isCrafted": false,
+  "seller": null
+}

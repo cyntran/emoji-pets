@@ -1,0 +1,46 @@
+{
+"username": "test2",
+  "id": "JPK4B69XPI4TY",
+  "balance": 50,
+  "email": "test2@test.com",
+  "pets": {
+    "turdle2": {
+      "price": 10,
+      "path": "../images/emoji-svg/1f422.svg",
+      "unicode": "1f422",
+      "isAnimal": true,
+      "petData": {
+      "hunger": 0,
+        "generation": 0,
+        "happiness": 100,
+        "intelligence": 50,
+        "charisma": 50,
+        "health": 100,
+        "attractiveness": 10,
+        "age": "baby",
+        "prevOwner": "JPK4B69XPI4TY"
+      },
+      "name": "turdle2",
+      "bio": "i m green"
+    },
+    "bunny_wabbit2": {
+      "price": 10,
+      "path": "../images/emoji-svg/1f407.svg",
+      "unicode": "1f407",
+      "isAnimal": true,
+      "petData": {
+        "hunger": 0,
+        "generation": 0,
+        "happiness": 100,
+        "intelligence": 70,
+        "charisma": 40,
+        "health": 100,
+        "attractiveness": 30,
+        "age": "baby",
+        "prevOwner": "JPK4B69XPI4TY"
+      },
+      "name": "bunny_wabbit2",
+      "bio": "i am a widdle bunny"
+    }
+  }
+}

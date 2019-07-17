@@ -1,0 +1,18 @@
+{
+  "price": 10,
+  "path": "../images/emoji-svg/1f405.svg",
+  "unicode": "1f405",
+  "isAnimal": true,
+  "quantity": 100,
+  "petData": {
+    "hunger": 0,
+    "generation": 0,
+    "happiness": 100,
+    "intelligence": 75,
+    "charisma": 57,
+    "health": 100,
+    "attractiveness": 80,
+    "age": "baby",
+    "prevOwner": false
+  }
+}
