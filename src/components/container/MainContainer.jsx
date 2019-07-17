@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import ReactDOM from "react-dom"
 import Menu from "../presentational/Menu.jsx"
+import UserItem from "../presentational/UserItem.jsx"
 import '../../css/styles.css'
 import config from "../../../clientConfig.js"
 
@@ -69,7 +70,7 @@ class MainContainer extends Component {
         </label><br /><br />
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
         { displayMenu(this.state.showSignIn) }
-        <button id="adopt-btn" onClick={() => this.nextPath('/forsale')}>{!this.state.user.animal ? 'Adopt a pet!' : 'Browse the market!'}</button><br />
+        <button id="adopt-btn" onClick={() => this.nextPath('/forsale')}>{isEmpty(this.state.user.pets) ? 'Adopt a pet!' : 'Browse the market!'}</button><br />
         { this.state.user && <button id='sign-out-btn' onClick={() => logout()}>Log out</button> }
         { this.state.user && showWallet(this.state.user, this.props.history)}
         { this.state.cuteDuck && <img id='cute-duck-img' src={this.state.cuteDuck}/> } <br />
@@ -116,8 +117,9 @@ function showWallet (usrInfo, routeHistory) {
       <h1 id='your-wallet'>{usrInfo.username}'s dashboard </h1>
       <button id='wallet-amt-btn'>Coins:{usrInfo.balance}</button>
       <p className='user-items-tag'>Pets</p> <hr id='hr'/>
-      {showPets(usrInfo, routeHistory)}
+      { showPets(usrInfo, routeHistory) }
       <p className='user-items-tag'>Items</p> <hr id='hr'/>
+      { showItems(usrInfo, routeHistory) }
     </div>
   )
 }
@@ -125,16 +127,26 @@ function showWallet (usrInfo, routeHistory) {
 function showPets (usrInfo, routeHistory) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='pets-container' key={i}>
+    <div className='items' key={i}>
       <div onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
         <p className='see-bio-text'> click me! </p>
         <img src={usrInfo.pets[name].path} id='pet'/>
         <p id='pet-name'>{name}</p>
         <p id='pet-health'>Health: {usrInfo.pets[name].petData.health}</p><br />
-        <p id='pet-age'>generation: {usrInfo.pets[name].petData.generation}</p>
+        <p id='pet-age'>Generation: {usrInfo.pets[name].petData.generation}</p>
       </div>
-      <button className='sell-btn' onClick={() => handleSell(name, usrInfo.pets[name])}> Sell </button>
+      <button className='sell-btn' onClick={() => handleSell(name, usrInfo.pets[name])}> sell </button>
     </div>
+  )
+}
+
+
+// TODO: Display Item as own self-contained component here.
+// Pass into props toggle for close
+function showItems (usrInfo, routeHistory) {
+  let items = Object.keys(usrInfo.items)
+  return items.map((name, i) =>
+    <UserItem pets={usrInfo.pets} item={usrInfo.items[name]} key={i}/>
   )
 }
 
@@ -154,6 +166,12 @@ async function getProfile () {
       imgPath: cuteDuck
     }
   }
+}
+
+// checks if object is empty
+function isEmpty (obj) {
+  obj = obj || {}
+  return Object.keys(obj).length === 0 && obj.constructor === Object
 }
 
 async function getAnimal (unicode) {
