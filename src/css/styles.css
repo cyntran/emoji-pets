@@ -56,7 +56,7 @@
   text-align: left;
 }
 
-.pets-container {
+.items {
   display: inline-block;
   margin: 15px;
   margin-top: 30px;
@@ -118,6 +118,10 @@
   height: 20px;
   font-size: 1.2rem;
   line-height: 10px;
+}
+
+.sell-btn:hover {
+  cursor:pointer;
 }
 
 .pet-form-labels {
@@ -186,6 +190,109 @@
   padding-left: 10px;
   color: gray;
   word-wrap: break-word;
+}
+
+.item-modal {
+  position: fixed;
+  height: 200px;
+  width: 220px;
+  top: 200px;
+  border: 1.5px solid black;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: default;
+}
+
+.open-item-btn {
+  background: #c9edc9;
+}
+
+.open-item-btn:hover {
+  cursor: pointer;
+}
+
+.item-btn {
+  width: 50px;
+  margin: 1px;
+  padding: 2px;
+}
+
+.pet-feed-select {
+  margin-left: 10px;
+  width: 100px;
+}
+
+.pet-feed-select:hover {
+  cursor: pointer;
+}
+
+.item-btn {
+  position: absolute;
+}
+
+.item-btn:hover{
+  cursor: pointer;
+}
+
+.item-img {
+  height: 80px;
+  margin-top: 20px;
+  margin-bottom: 0;
+  margin-left: 30px;
+}
+
+.close-btn {
+  top: 5px;
+  font-size: 1.5rem;
+  width: 10px;
+  height: 15px;
+  line-height: 1px;
+  background: white;
+  margin: 4px;
+  right: 5px;
+}
+
+.sell-btn {
+  bottom: 15px;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  font-size: 1.5rem;
+}
+
+.feed-div {
+  position: absolute;
+  top: 120px;
+  left: 12px;
+  width: 250px;
+}
+
+.pet-feed-select {
+  border: 1px solid transparent;
+  background: #f9e7cf;
+  font-size: 1rem;
+  width: 120px;
+}
+
+.pet-feed-select:focus {
+  outline: none;
+}
+
+.feed-btn {
+  position: relative;
+  padding: 10px;
+  background: #4faf2b;
+  color: white;
+  margin-left: 5px;
+  line-height: 2px;
+}
+
+.items:hover {
+  cursor: pointer;
+}
+
+.not-animal:hover {
+  cursor: default;
 }
 
 button {
@@ -495,4 +602,8 @@ label {
 
 #pet-profile-bio {
   padding-bottom: 200px;
+}
+
+#item-category {
+  font-size: 1.2rem;
 }
