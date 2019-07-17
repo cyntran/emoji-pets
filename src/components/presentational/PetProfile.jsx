@@ -41,7 +41,7 @@ class PetProfile extends Component {
             </span><br />
             {getTraits(pet)}
             <span className='pet-profile-span' id='pet-profile-bio-tag' >bio: </span> <br />
-            <span className='pet-data' id='pet-profile-bio'>{pet.petData.bio}</span>
+            <span className='pet-data' id='pet-profile-bio'>{pet.bio}</span>
           </div>
         </div>
       )
