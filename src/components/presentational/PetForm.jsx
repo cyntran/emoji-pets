@@ -40,15 +40,7 @@ class PetForm extends Component {
     this.state.item.petData.bio = postData.bio
     let itemData = this.state.item
 
-    console.log(itemData)
-
-    let newPostData = Object.assign(itemData, postData, {
-      path: this.state.item.path,
-      unicode: this.state.item.unicode,
-      isAnimal: this.state.item.isAnimal,
-      quantity: this.state.item.quantity
-    })
-    console.log('newPostData', newPostData)
+    console.log('itemData', itemData)
 
     if (!isEmpty(data.error)) {
       this.setState({
@@ -59,13 +51,15 @@ class PetForm extends Component {
         showPurchasingDiv: true,
       })
 
-      let petName = (!newPostData.name) ? this.state.name : newPostData.name
+      let buyData = { name: postData.name, bio: postData.bio }
+
+      console.log(buyData)
 
       fetch(`${config.apiUrl}/item/buy`, {
         method: 'POST',
         body: JSON.stringify({
-          name: (!newPostData.name) ? this.state.name : newPostData.name,
-          info: newPostData
+          buyData: buyData,
+          item: itemData
         }),
         credentials: 'include',
         headers: {
@@ -82,7 +76,7 @@ class PetForm extends Component {
       })
       .then((userInfo) => {
         console.log(`${JSON.stringify(userInfo, null, 2)}: userInfo`)
-        setTimeout(() => this.nextPath(`/pet/${userInfo.username}/${petName}`), 1000)
+        setTimeout(() => this.nextPath(`/pet/${userInfo.username}/${buyData.name}`), 1000)
       })
     }
   }
