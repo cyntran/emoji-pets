@@ -33,13 +33,14 @@ class Item extends Component {
         fetch(`${config.apiUrl}/forsale/item/${this.state.name}`)
         .then(res => res.json())
         .then(data => {
-          if (!data.petData.prevOwner && data.isAnimal) {
+          if (data.isAnimal && !data.petData.prevOwner) {
             this.setState({ showModal: true })
             return
           } else {
+            console.log('buy', this.state.name)
             fetch(`${config.apiUrl}/item/buy`, {
               method: 'POST',
-              body: JSON.stringify({ name: this.state.name, info: this.state.item}),
+              body: JSON.stringify({buyData: data, item: this.state.item}),
               credentials: 'include',
               headers: {
                 'Content-Type': 'application/json'
@@ -83,8 +84,8 @@ class Item extends Component {
         {this.state.showPurchasingDiv && <div id='purchasing-div'>Purchasing, please wait.</div>}
         <img src={this.state.item.path} name={this.state.name}/>
         <p className='item-description'>Price: {this.state.price} coins</p>
-        { this.state.item.petData.prevOwner && <p className='item-description'>Name: {this.state.item.name}</p> }
-        {this.state.item.quantity && <p className='item-description'>Quantity: {this.state.item.quantity}</p>}
+        { (this.state.item.petData && this.state.item.petData.prevOwner) && <p className='item-description'>Name: {this.state.item.name}</p> }
+        { this.state.item.quantity && <p className='item-description'>Quantity: {this.state.item.quantity}</p>}
         <button id='buy-btn' name={this.state.name}
           onClick={() => this.handleBuy()}>
           { animalOrItem(this.state.item) }</button>
