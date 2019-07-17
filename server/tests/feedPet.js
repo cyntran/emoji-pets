@@ -12,6 +12,8 @@ test.beforeEach(async t => {
   t.context = {
     db: level('', { valueEncoding: 'json' }),
     testUser: require('./test-files/testUser.json'),
+    testItem: require('./test-files/testItem2.json'),
+    testItem2: require('./test-files/testItem.json')
   }
   await setUpDatabase(t.context)
 })
@@ -73,4 +75,102 @@ test('updateFeedData sets giveHunger to false when current number < 3 and last f
   }
   feedPet.updateFeedData(hours, feedTime)
   t.is(feedTime.giveHunger, false)
+})
+
+test('updateFeedData resets when the last fed time was outside the 24 hour period', t => {
+  let hours = Date.now() / 1000 / 60 / 60
+  let feedTime = {
+    first: hours,
+    last: hours + 24,
+    number: 2,
+    canFeed: true,
+    giveHunger: false
+  }
+  feedPet.updateFeedData(hours, feedTime)
+  t.deepEqual(feedTime, {
+    number: 0,
+    first: hours,
+    last: hours,
+    canFeed: true,
+    giveHunger: true
+  })
+})
+
+test('updateFeedData sets canFeed to false if number >= 2 and feeding remains within 24 hour period', t => {
+  let hours = Date.now() / 1000 / 60 / 60
+  let feedTime = {
+    first: hours,
+    last: hours + 10,
+    number: 3,
+    canFeed: true,
+    giveHunger: false
+  }
+  feedPet.updateFeedData(hours, feedTime)
+  t.is(feedTime.canFeed, false)
+})
+
+test('getHappinessFromFood updates pet happiness based on food item', t => {
+  t.context.testUser.pets['turdle'].petData.happiness = 90
+  let score = feedPet.getHappinessFromFood(t.context.testUser.pets['turdle'].petData, 2)
+  t.is(score, 92)
+})
+
+test('getHappinessFromFood updates pet happiness with a ceiling of a 100 score', t => {
+  t.context.testUser.pets['turdle'].petData.happiness = 100
+  let score = feedPet.getHappinessFromFood(t.context.testUser.pets['turdle'].petData, 2)
+  t.is(score, 100)
+
+  t.context.testUser.pets['turdle'].petData.health = 99
+  t.context.testUser.pets['turdle'].petData.happiness = 90
+  let score2 = feedPet.getHappinessFromFood(t.context.testUser.pets['turdle'].petData, 5)
+  t.is(score2, 90)
+})
+
+test('updatePetStats deletes food item in user inventory if quantity under consumption is 1', t => {
+  t.context.testUser.items[t.context.testItem.unicode] = t.context.testItem
+  feedPet.updatePetStats(t.context.testItem, t.context.testUser.pets['turdle'], t.context.testUser)
+  if (!t.context.testUser.items[t.context.testItem]) {
+    t.pass()
+  } else {
+    t.fail()
+  }
+})
+
+test('updatePetStats subtracts food quantity if food quantity > 1 under consumption', t => {
+  let oldQuan = t.context.testUser.items[t.context.testItem2.unicode].quantity
+  feedPet.updatePetStats(t.context.testItem2, t.context.testUser.pets['turdle'], t.context.testUser)
+  let newQuan = t.context.testUser.items[t.context.testItem2.unicode].quantity
+  t.is(oldQuan - 1, 2)
+})
+
+test('updatePetStats subtracts hunger level by 5 if hunger > 0 and adds 5 to health if health < 100', t => {
+  t.context.testUser.pets['turdle'].petData.hunger = 5   // -5 makes 0
+  t.context.testUser.pets['turdle'].petData.health = 95  // + 5 makes 100
+  feedPet.updatePetStats(t.context.testItem2, t.context.testUser.pets['turdle'], t.context.testUser)
+  t.is(t.context.testUser.pets['turdle'].petData.hunger, 0)
+  t.is(t.context.testUser.pets['turdle'].petData.health, 100)
+})
+
+test('updatePetStats floor for hunger is 0 and ceiling for health is 100', t => {
+  t.context.testUser.pets['turdle'].petData.hunger = 0
+  t.context.testUser.pets['turdle'].petData.health = 100
+  feedPet.updatePetStats(t.context.testItem2, t.context.testUser.pets['turdle'], t.context.testUser)
+  t.is(t.context.testUser.pets['turdle'].petData.hunger, 0)
+  t.is(t.context.testUser.pets['turdle'].petData.health, 100)
+})
+
+test('feedPet updates pet stats if appropriate feeding time', t => {
+  // t.context.testUser.pets['turdle'].petData.health = 90
+  // t.context.testUser.pets['turdle'].petData.hunger = 10
+  let oldHealth = t.context.testUser.pets['turdle'].petData.health = 90
+  let oldHunger = t.context.testUser.pets['turdle'].petData.hunger = 10
+
+  feedPet.feedPet(t.context.testItem2.unicode, t.context.testUser.pets['turdle'], t.context.testUser)
+
+  if (oldHealth != t.context.testUser.pets['turdle'].petData.health &&
+      oldHunger.hunger != t.context.testUser.pets['turdle'].petData.hunger) {
+        t.pass()
+  } else {
+    t.fail(`oldHealth: ${oldHealth}, oldHunger: ${oldHunger} \n newPetData: ${JSON.stringify(t.context.testUser.pets['turdle'].petData, null, 2)}`)
+  }
 })
