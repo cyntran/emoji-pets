@@ -55,12 +55,12 @@ class SignUpModal extends Component {
       }
     }
 
-    toggleHidden () {
-      this.props.handleModal(true)
-      this.setState({
-        isHidden: true
-      })
-    }
+  toggleHidden () {
+    this.props.handleModal(true)
+    this.setState({
+      isHidden: true
+    })
+  }
 
   render () {
     return (
