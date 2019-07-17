@@ -84,7 +84,7 @@ function goToPet (username, petname, routeHistory) {
 function showPets (usrInfo, routeHistory) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='pets-container' key={i} onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
+    <div className='items' key={i} onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
       <img src={usrInfo.pets[name].path} id='pet'/>
       <p id='pet-name'>{name}</p>
       <p id='pet-age'>age: {usrInfo.pets[name].petData.age}</p>
