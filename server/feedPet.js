@@ -1,14 +1,17 @@
 let { isEmpty } = require('./dbScripts.js')
 
-// PARAMS: food - food unicode, pet - pet object, id - userID
 
+// PARAMS: food - food unicode, pet - pet object, user - user object
 function feedPet (food, pet, user) {
-  let petName = pet.name
-  let feedTime = pet.petData.feeding || {}
+  pet.petData.feeding = pet.petData.feeding || {}
+  let feedTime = pet.petData.feeding
   let feed = shouldFeedPet(feedTime)
   let foodItem = user.items[food]
-  if (foodItem == null) return
-  if (feed.canFeed) updatePetStats(foodItem, pet, user)
+  if (foodItem == null) return user
+  if (feed.canFeed) {
+    user = updatePetStats(foodItem, pet, user)
+  }
+  return user
 }
 
 
@@ -16,27 +19,20 @@ function feedPet (food, pet, user) {
 // increase health by 5
 function updatePetStats (foodItem, pet, user) {
   let score = (!foodItem.isCrafted) ? 2 : 5
-  pet.petData.happiness = getHappinessFromFood(pet.petData, score)
-  if ((foodItem.quantity - 1) <= 0) {
-    delete user.items[foodItem.unicode]
-  } else {
-    foodItem.quantity -= 1
+  if (pet.petData.health >= 20) {
+    pet.petData.hunger = (pet.petData.hunger - 5 < 0) ? 0 : pet.petData.hunger - 5
+    pet.petData.health = (pet.petData.health + 5 > 100) ? 100 : pet.petData.health + 5
+    pet.petData.happiness = (pet.petData.happiness + score > 100) ? 100 : pet.petData.happiness + score
+    if ((foodItem.quantity - 1) <= 0) {
+      delete user.items[foodItem.unicode]
+    } else {
+      foodItem.quantity -= 1
+    }
+    user.pets[pet.name].petData = pet.petData
   }
-  pet.petData.hunger = (pet.petData.hunger - 5 < 0) ? 0 : pet.petData.hunger - 5
-  pet.petData.health = (pet.petData.health + 5 > 100) ? 100 : pet.petData.health + 5
-  user.pets[pet.name] = pet
+  return user
 }
 
-// PARAMS: pet - pet object, happiness - value to be added to pet object
-// IF pet health is below zero, do not update happiness score.
-function getHappinessFromFood (petData, happiness) {
-  if (petData.health < 100) {
-    return petData.happiness
-  } else {
-    let totalHappiness = petData.happiness + happiness
-    return ( totalHappiness > 100) ? 100 : totalHappiness
-  }
-}
 
 function shouldFeedPet (feedTime) {
   let hours = Date.now() / 1000 / 60 / 60
@@ -84,6 +80,5 @@ module.exports = {
   feedPet,
   shouldFeedPet,
   updatePetStats,
-  getHappinessFromFood,
   updateFeedData
 }
