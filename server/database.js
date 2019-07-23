@@ -118,7 +118,14 @@ async function removeUserItem (db, id, itemName, info) {
       delete info.quantity
       delete userInfo[type][itemName]
     }
-    let admin = await db.get(`admin/reserve`)
+  } catch (err) {
+    throw err
+  }
+}
+
+async function updateUserQuantity (userInfo, info, name) {
+  let admin = await db.get(`admin/reserve`)
+  try {
     await db.batch()
       .put(`user/${id}`, userInfo)
       .put('admin/', { reserve: admin + 5 })
@@ -129,10 +136,10 @@ async function removeUserItem (db, id, itemName, info) {
     throw err
   }
 }
-
-function updateUserQuantity (userInfo, info, name) {
-  (info.quantity - 1 <= 0) ? delete userInfo.items[name] : --userInfo.items[name].quantity
-}
+//
+// function updateUserQuantity (userInfo, info, name) {
+//   (info.quantity - 1 <= 0) ? delete userInfo.items[name] : --userInfo.items[name].quantity
+// }
 
 async function updateMarketQuantity (db, itemName) {
   let item = await db.get(`emoji/forsale/${itemName}`)
@@ -179,16 +186,12 @@ function getForSale (db) {
 }
 
 
-function updatePetAfterFeed (db, food, pet, id) {
-  getUserById(db, id)
-    .then((user) => {
-      feedPet(food, pet, user)
-      // db.put(`user/${user.id}`, user, (err) => {
-      //   if (err) throw err
-      //   console.log('finished updating user with new pet data')
-      //   console.log(`--------------------- END ------------------------`)
-      // })
-    })
+// food => food unicode
+// pet => pet object
+// id => user id
+async function updatePetAfterFeed (db, food, pet, user) {
+  let updated = feedPet(food, pet, user)
+  await db.put(`user/${user.id}`, user)
 }
 
 
@@ -203,5 +206,6 @@ module.exports = {
   getPetFromUser,
   addUser,
   addUserItem,
-  removeUserItem
+  removeUserItem,
+  updatePetAfterFeed
 }
