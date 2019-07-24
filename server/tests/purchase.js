@@ -23,7 +23,6 @@ async function setUpDatabase (cont) {
 
 test.beforeEach(async t => {
   let level = require('level-mem')
-  // let ranString = Math.random().toString(36).substring(7)
   t.context = {
     db: level('', { valueEncoding: 'json'}),
     testUser: require('./test-files/testUser.json'),
