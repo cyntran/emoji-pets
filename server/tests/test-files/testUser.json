@@ -11,6 +11,7 @@
         "unicode": "1f422",
         "isAnimal": true,
         "petData": {
+          "feeding": {},
           "hunger": 0,
           "generation": 0,
           "happiness": 100,
@@ -30,9 +31,11 @@
         "unicode": "1f407",
         "isAnimal": true,
         "petData": {
+          "feeding": {},
           "hunger": 0,
           "generation": 0,
           "happiness": 100,
+          "health": 100,
           "intelligence": 69,
           "charisma": 88,
           "health": 100,
@@ -49,6 +52,7 @@
         "unicode": "1f401",
         "isAnimal": true,
         "petData": {
+          "feeding": {},
           "hunger": 0,
           "generation": 0,
           "happiness": 100,
