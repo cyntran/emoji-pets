@@ -109,27 +109,16 @@ test('updateFeedData sets canFeed to false if number >= 2 and feeding remains wi
   t.is(feedTime.canFeed, false)
 })
 
-test('getHappinessFromFood updates pet happiness based on food item', t => {
-  t.context.testUser.pets['turdle'].petData.happiness = 90
-  let score = feedPet.getHappinessFromFood(t.context.testUser.pets['turdle'].petData, 2)
-  t.is(score, 92)
-})
-
-test('getHappinessFromFood updates pet happiness with a ceiling of a 100 score', t => {
-  t.context.testUser.pets['turdle'].petData.happiness = 100
-  let score = feedPet.getHappinessFromFood(t.context.testUser.pets['turdle'].petData, 2)
-  t.is(score, 100)
-
-  t.context.testUser.pets['turdle'].petData.health = 99
-  t.context.testUser.pets['turdle'].petData.happiness = 90
-  let score2 = feedPet.getHappinessFromFood(t.context.testUser.pets['turdle'].petData, 5)
-  t.is(score2, 90)
+test('updatePetStats updates pet happiness with a ceiling of a 100 score', t => {
+  let item = t.context.testUser.items[t.context.testItem2.unicode]
+  let updated = feedPet.updatePetStats(item, t.context.testUser.pets['turdle'], t.context.testUser)
+  t.is(updated.pets['turdle'].petData.health, 100)
 })
 
 test('updatePetStats deletes food item in user inventory if quantity under consumption is 1', t => {
-  t.context.testUser.items[t.context.testItem.unicode] = t.context.testItem
-  feedPet.updatePetStats(t.context.testItem, t.context.testUser.pets['turdle'], t.context.testUser)
-  if (!t.context.testUser.items[t.context.testItem]) {
+  t.context.testUser.items[t.context.testItem.unicode] = t.context.testItem2
+  feedPet.updatePetStats(t.context.testItem2, t.context.testUser.pets['turdle'], t.context.testUser)
+  if (!t.context.testUser.items[t.context.testItem2]) {
     t.pass()
   } else {
     t.fail()
@@ -140,7 +129,7 @@ test('updatePetStats subtracts food quantity if food quantity > 1 under consumpt
   let oldQuan = t.context.testUser.items[t.context.testItem2.unicode].quantity
   feedPet.updatePetStats(t.context.testItem2, t.context.testUser.pets['turdle'], t.context.testUser)
   let newQuan = t.context.testUser.items[t.context.testItem2.unicode].quantity
-  t.is(oldQuan - 1, 2)
+  t.is(newQuan, 2)
 })
 
 test('updatePetStats subtracts hunger level by 5 if hunger > 0 and adds 5 to health if health < 100', t => {
