@@ -11,9 +11,30 @@ let { foodArr } = require('./files/saleItems.js')
 
 // addAllEmojis ()
 // addFoods ()
+// deleteTestUsers ()
 
 function isEmpty (obj) {
   return Object.keys(obj).length === 0 && obj.constructor === Object
+}
+
+function deleteTestUsers () {
+  let key = 'user/username/'
+  let id = []
+  db.createReadStream({
+    gte: key,
+    lte: String.fromCharCode(key.charCodeAt(0) + 1)
+  })
+  .on('data', (data) => {
+    if (!data.key.includes('kep') && !data.key.includes('mappum')) {
+      console.log(data)
+      id.push(data.value)
+    }
+  })
+  .on('end', async () => {
+    for (let i = 0; i < id.length; i++) {
+      await db.del(`user/${id[i]}`)
+    }
+  })
 }
 
 function findAndRestoreDatabaseUsers () {
