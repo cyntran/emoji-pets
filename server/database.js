@@ -157,6 +157,7 @@ async function getEmojiByUnicode (db, unicode) {
     return await db.get(`emoji/${unicode}`)
   } catch (err) {
     if (err.notFound) throw new AccessError ()
+    throw err
   }
 }
 
