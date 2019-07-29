@@ -1,6 +1,4 @@
-let { getUserById } = require('../server/database.js')
 let { getRandomInt, isPetUnicode, isEmpty } = require('./dbScripts.js')
-
 
 // db => database
 // id => user id
@@ -9,7 +7,7 @@ let { getRandomInt, isPetUnicode, isEmpty } = require('./dbScripts.js')
 async function purchase (db, id, buyData, item) {
   let userInfo = {}
   try {
-    userInfo = await getUserById(db, id)
+    userInfo = await db.get(`user/${id}`)
     let updatedUserInfo = deepCopyUser(userInfo)
     let newQuan = updateExistingUserItemQuan(item, updatedUserInfo)
     setUserItemProperties(updatedUserInfo, item, buyData, newQuan)
@@ -79,6 +77,7 @@ async function updatePurchaseItemQuantity (db, item) {
   let key = (!item.name) ? item.unicode : item.name
   if (item.quantity != null && item.quantity > 1) {
     --item.quantity
+    return item
   } else {
     await db.del(`emoji/forsale/${key}`)
   }
@@ -135,9 +134,9 @@ async function saveItemToMarket (db, item) {
       await db.put(`emoji/forsale/${item.name}`, item)
       return
     }
-    if (item != null) {
-      await db.put(`emoji/forsale/${item.unicode}`, item)
-    }
+  }
+  if (item != null) {
+    await db.put(`emoji/forsale/${item.unicode}`, item)
   }
 }
 
