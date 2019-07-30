@@ -1,8 +1,6 @@
 let { getRandomInt, isPetUnicode, isEmpty } = require('./dbScripts.js')
 let { AccessError, UpdateError } = require('./files/error.js')
 let { feedPet } = require('./feedPet.js')
-let { purchase } = require('./purchase.js')
-
 
 async function getUserById (db, id) {
   try {
@@ -71,11 +69,9 @@ async function getItemForSale (db, id) {
     return await db.get(`emoji/forsale/${id}`)
   } catch (err) {
     if (!err.notFound) throw new AccessError()
-    console.error(err)
     throw err
   }
 }
-
 
 // move out
 function increaseHunger (db, id) {
@@ -96,55 +92,6 @@ function increaseHunger (db, id) {
     console.log(JSON.stringify(user.pets, null, 4))
     await db.put(`user/${id}`, user)
   })
-}
-
-
-async function addUserItem (db, id, buyData, item) {
-  return await purchase(db, id, buyData, item)
-}
-
-// PARAMS: id --> user id, itemName --> name of item, info --> item info
-//move out
-async function removeUserItem (db, id, itemName, info) {
-  console.log(`------------removeUserItem-------------`)
-  console.log('info', info)
-  try {
-    let userInfo = await getUserById(db, id)
-    let type = info.isAnimal ? 'pets' : 'items'
-    if (!info.isAnimal) {
-      updateUserQuantity(userInfo, info, itemName)
-      info = await updateMarketQuantity(db, itemName)
-    } else {
-      delete info.quantity
-      delete userInfo[type][itemName]
-    }
-  } catch (err) {
-    throw err
-  }
-}
-
-async function updateUserQuantity (userInfo, info, name) {
-  let admin = await db.get(`admin/reserve`)
-  try {
-    await db.batch()
-      .put(`user/${id}`, userInfo)
-      .put('admin/', { reserve: admin + 5 })
-      .put(`emoji/forsale/${itemName}`, info)
-      .write(() => console.log(`done batching`))
-    return userInfo
-  } catch (err) {
-    throw err
-  }
-}
-//
-// function updateUserQuantity (userInfo, info, name) {
-//   (info.quantity - 1 <= 0) ? delete userInfo.items[name] : --userInfo.items[name].quantity
-// }
-
-async function updateMarketQuantity (db, itemName) {
-  let item = await db.get(`emoji/forsale/${itemName}`)
-  ++item.quantity
-  return item
 }
 
 async function getPetFromUser (db, user, pet) {
@@ -206,7 +153,5 @@ module.exports = {
   deleteUser,
   getPetFromUser,
   addUser,
-  addUserItem,
-  removeUserItem,
   updatePetAfterFeed
 }

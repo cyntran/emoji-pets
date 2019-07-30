@@ -115,12 +115,12 @@ app.get('/pet/:username/:petname', async (req, res) => {
 
 
 app.get('/profile', async (req, res) => {
-  if (!req.user) {
+  try {
+    let user = await dbOp.getUserById(db, req.user.id)
+    res.status(200).json(user)
+  } catch (err) {
     res.status(500).json({ error: 'User not logged in.' })
-    return
   }
-  let user = await dbOp.getUserById(db, req.user.id)
-  res.status(200).json(user)
 })
 
 
@@ -177,8 +177,12 @@ app.get('/signout' , (req, res) => {
 
 app.get('/item/:id', async (req, res) => {
   let unicode = req.params.id.toLowerCase()
-  let emoji = await dbOp.getEmojiByUnicode(db, unicode)
-  res.status(200).json(emoji)
+  try {
+    let emoji = await dbOp.getEmojiByUnicode(db, unicode)
+    res.status(200).json(emoji)
+  } catch (err) {
+    res.status(500).json({ message: 'emoji not found' })
+  }
 })
 
 // TODO: update user balance as well...
