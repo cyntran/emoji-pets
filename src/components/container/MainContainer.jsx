@@ -25,17 +25,18 @@ class MainContainer extends Component {
     if (scrollPs) {
       setTimeout(() => window.scrollTo(0, scrollPs), 200)
     }
+
     getProfile()
-      .then((res) => {
-      if (res.message) {
+    .then(prof => {
+      if (prof.message) {
         this.setState({
-          msg: res.message,
-          cuteDuck: res.imgPath,
+          msg: prof.message,
+          cuteDuck: prof.imgPath,
           showSignIn: true
         })
       } else {
         this.setState({
-          user: res
+          user: prof
         })
       }
     })
