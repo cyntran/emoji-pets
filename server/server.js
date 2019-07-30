@@ -2,6 +2,8 @@ let express = require('express')
 let level = require('level')
 let db = level('emoji', { valueEncoding: 'json' })
 let dbOp = require('./database.js')
+let { purchase } = require('./purchase.js')
+let { sell } = require('./sell.js')
 let session = require('express-session')
 let path = require('path')
 let uuid = require('uuid/v4')
@@ -109,8 +111,12 @@ app.get('/profile/:username', async (req, res) => {
 
 
 app.get('/pet/:username/:petname', async (req, res) => {
-  let pet = await dbOp.getPetFromUser(db, req.params.username, req.params.petname)
-  res.status(200).json(pet)
+  try {
+    let pet = await dbOp.getPetFromUser(db, req.params.username, req.params.petname)
+    res.status(200).json(pet)
+  } catch (err) {
+    res.status(500).json({ message: 'Pet not found.' })
+  }
 })
 
 
@@ -181,7 +187,7 @@ app.get('/item/:id', async (req, res) => {
     let emoji = await dbOp.getEmojiByUnicode(db, unicode)
     res.status(200).json(emoji)
   } catch (err) {
-    res.status(500).json({ message: 'emoji not found' })
+    res.status(500).json({ message: 'Item not found.' })
   }
 })
 
@@ -192,16 +198,17 @@ app.post('/item/buy', (req, res) => {
     res.status(500).json({ unauthorized: 'You are not signed in! '})
   }
   console.log(`-------/item/buy NAME------- ${req.body.name}`)
-
-  dbOp.addUserItem(db, req.user.id, req.body.buyData, req.body.item)
+  purchase(db, req.user.id, req.body.buyData, req.body.item)
   .then((userInfo) => {
-    console.log('userinfo', userInfo)
     if (!userInfo) {
-      res.status(500).json({ message: 'Not enough funds' })
+      res.status(500).json({ message: 'Not enough funds.' })
       return
     }
     res.status(200).json(userInfo)
     return
+  })
+  .catch(err => {
+    res.status(500).json({ message: 'Uh-oh. Could not purchase pet or item!' })
   })
 })
 
@@ -212,15 +219,13 @@ app.post('/item/sell', (req, res) => {
   let name = req.body.name
   let info = req.body.info
   let userId = req.user.id
-  dbOp.removeUserItem(db, userId, name, info)
+  sell(db, userId, name, info)
   .then((userInfo) => {
-    console.log(userInfo)
     res.status(200).send(userInfo)
     return
   })
   .catch(err => {
-    console.log(err)
-    res.status(500).json({ message: 'Sorry -- could not sell.' })
+    res.status(500).json({ message: 'Uh-oh. Could not sell pet or item!' })
     return
   })
 })
@@ -233,12 +238,12 @@ app.get('/forsale', (req, res) =>  {
 })
 
 app.get('/forsale/item/:id', async (req, res) => {
-  let item = await dbOp.getItemForSale(db, req.params.id)
-  if (item.message) {
-    res.status(500).json(item.message)
-    return
+  try {
+    let item = await dbOp.getItemForSale(db, req.params.id)
+    res.status(200).json(item)
+  } catch (err) {
+    res.status(500).json({ message: 'Could not get for sale item.' })
   }
-  res.status(200).json(item)
 })
 
 if (process.env.NODE_ENV === 'dev') {
