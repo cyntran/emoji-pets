@@ -161,7 +161,7 @@ test('savePurchaseToUser stores pet data to user in database and sets prevOwner 
   }
 })
 
-test('paySeller returns if item has no seller or pet has no previous owner', async t => {
+test('paySeller returns if pet has no seller', async t => {
   let fakeUser = {
     id: 'fakeuser123',
     username: 'fakeuser',
@@ -173,8 +173,7 @@ test('paySeller returns if item has no seller or pet has no previous owner', asy
   }
   t.context.testPetPrevOwner.petData.prevOwner = fakeUser.id
   await t.context.db.put(`user/${fakeUser.id}`, fakeUser)
-  await purchase.paySeller(t.context.db, t.context.testItem, fakeUser.id, 5)
-  await purchase.paySeller(t.context.db, t.context.testPetNew, fakeUser.id, 5)
+  await purchase.paySeller(t.context.db, t.context.testPetNew, t.context.testPetNew, 5)
   let user = await t.context.db.get(`user/${fakeUser.id}`)
   if (user.balance != 5) {
     t.fail()
@@ -195,10 +194,11 @@ test('paySeller pays seller 5 coins upon user purchase', async t => {
     items: {}
   }
   t.context.testPetPrevOwner.petData.prevOwner = fakeUser.id
+
   let oldBalance = fakeUser.balance
   let payment = 5
   await t.context.db.put(`user/${fakeUser.id}`, fakeUser)
-  await purchase.paySeller(t.context.db, t.context.testPetPrevOwner, fakeUser.id, payment)
+  await purchase.paySeller(t.context.db, t.context.testPetPrevOwner, t.context.testPetPrevOwner, payment)
   let updated = await t.context.db.get(`user/${fakeUser.id}`)
   if (payment + oldBalance === updated.balance) {
     t.pass()
@@ -214,11 +214,13 @@ test('saveItemToMarket gets new pet stats for pet on the market', async t => {
   t.notDeepEqual(newStats, oldStats)
 })
 
-test('saveItemToMarket does not get new pet stats for pets with previous owners', async t => {
-  let oldStats = t.context.testPetPrevOwner.petData
+test('saveItemToMarket deletes pets with a previous owner', async t => {
   await purchase.saveItemToMarket(t.context.db, t.context.testPetPrevOwner)
-  let sameStats = await t.context.db.get(`emoji/forsale/${t.context.testPetPrevOwner.name}`)
-  t.deepEqual(oldStats, sameStats.petData)
+  try {
+    await t.context.db.get(`emoji/forsale/${t.context.testPetPrevOwner.name}`)
+  } catch (err) {
+    if (err.notFound) t.pass()
+  }
 })
 
 test('purchase returns updated userInfo for pet without owner', async t => {
