@@ -15,9 +15,9 @@ async function purchase (db, id, buyData, item) {
     if (notEnoughFunds(updatedUserInfo)) return false
 
     await updatePurchaseItemQuantity(db, item)
-    let itemName = (buyData && buyData.name) ? buyData.name : buyData.unicode
+    let itemName = (buyData && buyData.name) ? buyData.name : item.unicode
     await savePurchaseToUser(db, item,  itemName, updatedUserInfo)
-    await paySeller(db, buyData, id, 5)
+    await paySeller(db, buyData, item, 5)
     await saveItemToMarket(db, item)
     return updatedUserInfo
   } catch (err) {
@@ -127,30 +127,32 @@ async function savePurchaseToUser(db, item, petName, updatedUserInfo) {
 
 async function saveItemToMarket (db, item) {
   let type = item.isAnimal ? 'pets' : 'items'
+  if (type === 'items') {
+    await db.put(`emoji/forsale/${item.unicode}`, item)
+    return
+  }
   if (type === 'pets' && !item.petData.prevOwner) {
     item.petData = getNewPetStats(item.petData)
-  } else {
-    if (type === 'pets' && item.petData.prevOwner) {
-      await db.put(`emoji/forsale/${item.name}`, item)
-      return
-    }
-  }
-  if (item != null) {
     await db.put(`emoji/forsale/${item.unicode}`, item)
+  } else {
+    await db.del(`emoji/forsale/${item.name}`)
+    return
   }
 }
 
 
 // sellers only earn from selling pets right now
 // items can't be sold yet
-async function paySeller (db, buyData, id, amount) {
-  if (!buyData.isAnimal || !buyData.petData.prevOwner)  return
+async function paySeller (db, buyData, item, amount) {
+  // if item not a previous pet, return
+  if (!buyData.isAnimal || !buyData.petData.prevOwner) return
   try {
-    let user = await db.get(`user/${id}`)
-    let sellerUpdated = Object.assign({}, user, {
-      balance: user.balance + amount
+    let prevId = item.petData.prevOwner
+    let prevOwner = await db.get(`user/${prevId}`)
+    let sellerUpdated = Object.assign({}, prevOwner, {
+      balance: prevOwner.balance + amount
     })
-    await db.put(`user/${buyData.petData.prevOwner}`, sellerUpdated)
+    await db.put(`user/${prevId}`, sellerUpdated)
   } catch (err) {
     throw err
   }
