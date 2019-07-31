@@ -104,7 +104,6 @@ app.get('/profile/:username', async (req, res) => {
     }
     res.status(200).json(userInfo)
   } catch (err) {
-    console.log(err)
     res.status(404).json({ message: 'User not found.' })
   }
 })
