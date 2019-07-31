@@ -9,7 +9,6 @@ async function sell (db, id, itemName, item) {
     if (!item.isAnimal) {
       userInfo = updateUserQuantity(db, userInfo, item)
       item = await updateMarketQuantity(db,  item)
-      await db.put(`emoji/forsale/${item.unicode}`, item)
     } else {
       delete userInfo.pets[itemName]
       await db.put(`emoji/forsale/${itemName}`, item)
@@ -50,6 +49,7 @@ async function updateMarketQuantity (db, item) {
     if (!err.notFound) throw err
     item.quantity = 1
   }
+  await db.put(`emoji/forsale/${item.unicode}`, item)
   return item
 }
 
