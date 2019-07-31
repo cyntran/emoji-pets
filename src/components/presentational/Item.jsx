@@ -49,7 +49,6 @@ class Item extends Component {
             .then(res => {
               if (!res.ok) {
                 this.setState({ errorMsg: true })
-                setTimeout(() => window.location.reload(), 2000)
                 return
               } else {
                 this.setState({
@@ -59,7 +58,11 @@ class Item extends Component {
               }
             })
             .then(user => {
-              setTimeout(() =>  this.nextPath(`/pet/${user.username}/${this.state.name}`), 1000)
+              if (!this.state.errorMsg) {
+                setTimeout(() =>  this.nextPath(`/pet/${user.username}/${this.state.name}`), 1000)
+              } else {
+                setTimeout(() => this.nextPath(`/`), 1500)
+              }
             })
           }
         })
