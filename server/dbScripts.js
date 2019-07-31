@@ -12,6 +12,8 @@ let { foodArr } = require('./files/saleItems.js')
 // addAllEmojis ()
 // addFoods ()
 // deleteTestUsers ()
+// deleteEmails ()
+
 
 function isEmpty (obj) {
   return Object.keys(obj).length === 0 && obj.constructor === Object
