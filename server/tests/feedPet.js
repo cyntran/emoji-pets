@@ -18,9 +18,9 @@ test.beforeEach(async t => {
   await setUpDatabase(t.context)
 })
 
-test('shouldFeedPet instantiates feedTime object with data if empty', t => {
+test('createFeedObject instantiates feedTime object with data if empty', t => {
   let keys = ['first', 'last', 'number', 'canFeed', 'giveHunger']
-  let feedTime = feedPet.shouldFeedPet({})
+  let feedTime = feedPet.createFeedObject({})
   let feedTimeKeys = Object.keys(feedTime).sort()
   if (JSON.stringify(feedTimeKeys)  === JSON.stringify(keys.sort())) {
     t.pass()
@@ -30,9 +30,9 @@ test('shouldFeedPet instantiates feedTime object with data if empty', t => {
 })
 
 // pets can be fed up to three a day.
-test('shouldFeedPet returns false if FIRST feed of the day was less than 24 hours ago', t => {
+test('createFeedObject returns false if FIRST feed of the day was less than 24 hours ago', t => {
   let current = Date.now() / 1000 / 60 / 60
-  let shouldFeed = feedPet.shouldFeedPet({ first: current, last: 0, number: 1, canFeed: false, giveHunger: false })
+  let shouldFeed = feedPet.createFeedObject({ first: current, last: 0, number: 1, canFeed: false, giveHunger: false })
   t.is(shouldFeed, false)
 })
 
@@ -149,8 +149,6 @@ test('updatePetStats floor for hunger is 0 and ceiling for health is 100', t => 
 })
 
 test('feedPet updates pet stats if appropriate feeding time', t => {
-  // t.context.testUser.pets['turdle'].petData.health = 90
-  // t.context.testUser.pets['turdle'].petData.hunger = 10
   let oldHealth = t.context.testUser.pets['turdle'].petData.health = 90
   let oldHunger = t.context.testUser.pets['turdle'].petData.hunger = 10
 
@@ -161,5 +159,27 @@ test('feedPet updates pet stats if appropriate feeding time', t => {
         t.pass()
   } else {
     t.fail(`oldHealth: ${oldHealth}, oldHunger: ${oldHunger} \n newPetData: ${JSON.stringify(t.context.testUser.pets['turdle'].petData, null, 2)}`)
+  }
+})
+
+test('getHungryPets returns list of hungry pets', t => {
+  let hungryPets = feedPet.getHungryPets(t.context.testUser.pets)
+  if (hungryPets.length === 3) {
+    t.pass()
+  } else {
+    t.fail(hungryPets)
+  }
+})
+
+test('findHungryPets increments pet hunger and updates db', async t => {
+  let oldUser = await t.context.db.get(`user/${t.context.testUser.id}`)
+  await feedPet.findHungryPets(t.context.db, t.context.testUser.id)
+  let updatedUser = await t.context.db.get(`user/${t.context.testUser.id}`)
+  let pets = Object.keys(updatedUser.pets)
+  t.plan(3)
+  for (let i = 0; i < pets.length; i++) {
+    let oldHunger = oldUser.pets[pets[i]].petData.hunger
+    let newHunger = updatedUser.pets[pets[i]].petData.hunger
+    t.is(newHunger, oldHunger + 10)
   }
 })
