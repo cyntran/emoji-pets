@@ -73,26 +73,6 @@ async function getItemForSale (db, id) {
   }
 }
 
-// move out
-function increaseHunger (db, id) {
-  getUserById(db, id)
-  .then(async (user) => {
-    let pets = Object.values(user.pets)
-    let updated = {}
-    for (let i = 0; i < pets.length; i++) {
-      let pet = pets[i]
-      let feeding = Object.assign({}, pet.petData.feeding) || {}
-      let data = shouldFeedPet(feeding)
-      if (data.giveHunger) {
-        pet.petData.hunger = (pet.petData.hunger + 10 > 100) ? 100 : pet.petData.hunger + 10
-      }
-      updated[pet.name] = pet
-    }
-    user.pets = updated
-    console.log(JSON.stringify(user.pets, null, 4))
-    await db.put(`user/${id}`, user)
-  })
-}
 
 async function getPetFromUser (db, user, pet) {
   let owner = await getUserByUsername(db, user)
@@ -132,7 +112,6 @@ function getForSale (db) {
     .on('error', reject)
   })
 }
-
 
 // food => food unicode
 // pet => pet object

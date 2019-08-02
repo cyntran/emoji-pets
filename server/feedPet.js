@@ -1,11 +1,12 @@
 let { isEmpty } = require('./dbScripts.js')
-
+let { getUserById } = require('./database.js')
+let testUser = require('./tests/test-files/testUser.json')
 
 // PARAMS: food - food unicode, pet - pet object, user - user object
 function feedPet (food, pet, user) {
   pet.petData.feeding = pet.petData.feeding || {}
   let feedTime = pet.petData.feeding
-  let feed = shouldFeedPet(feedTime)
+  let feed = createFeedObject(feedTime)
   let foodItem = user.items[food]
   if (foodItem == null) return user
   if (feed.canFeed) {
@@ -33,8 +34,8 @@ function updatePetStats (foodItem, pet, user) {
   return user
 }
 
-
-function shouldFeedPet (feedTime) {
+// this should be called: createFeedTime
+function createFeedObject (feedTime) {
   let hours = Date.now() / 1000 / 60 / 60
   if (isEmpty(feedTime)) {
     feedTime = {
@@ -76,9 +77,48 @@ function updateFeedData (hours, feedTime) {
   feedTime.canFeed = (feedTime.number > 2) ? false : true
 }
 
+// call this function every time user loads profile
+async function findHungryPets (db, id) {
+  let user = await getUserById(db, id)
+  let hungryPets = getHungryPets(user.pets)
+  for (let i = 0; i < hungryPets.length; i++) {
+    hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
+    user.pets[hungryPets[i].name] = hungryPets[i]
+  }
+  await db.put(`user/${id}`, user)
+}
+
+function shouldFeedPet (feedTime) {
+  if (isEmpty(feedTime)) {
+    return true
+  } else {
+    return feedTime.giveHunger
+  }
+}
+
+function getHungryPets (userPets) {
+  let pets = Object.values(userPets)
+  let hungryPets = []
+  for (let i = 0; i < pets.length; i++) {
+    let feeding = Object.assign({}, pets[i].petData.feeding) || {}
+    if (shouldFeedPet(feeding)) {
+      hungryPets.push(pets[i])
+    }
+  }
+  return hungryPets
+}
+
+function incrementHunger (hunger) {
+  return (hunger + 10 > 100) ? 100 : hunger + 10
+}
+
+
 module.exports = {
   feedPet,
-  shouldFeedPet,
+  createFeedObject,
   updatePetStats,
-  updateFeedData
+  updateFeedData,
+  findHungryPets,
+  getHungryPets,
+  incrementHunger
 }
