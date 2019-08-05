@@ -1,0 +1,63 @@
+{
+  "username": "testUserHunger",
+  "id": "JTV4B90XPI4QM",
+  "email": "test@test.com",
+  "hash": "$2b$10$n8Keo.QmjK3X7CJscpv2m.cnYqeD1LATDyU1np7vwmxIPbH0/XuGy",
+  "balance": 70,
+  "pets": {
+      "bunny_wabbit": {
+        "price": 10,
+        "path": "../images/emoji-svg/1f407.svg",
+        "unicode": "1f407",
+        "isAnimal": true,
+        "petData": {
+          "feeding": {
+            "first": 0,
+            "last": 0,
+            "number": 1,
+            "canFeed": true,
+            "giveHunger": false
+          },
+          "hunger": 0,
+          "generation": 0,
+          "happiness": 100,
+          "health": 100,
+          "intelligence": 69,
+          "charisma": 88,
+          "health": 100,
+          "attractiveness": 12,
+          "age": "baby",
+          "prevOwner": "JXV4B77XPI4NI"
+        },
+          "name": "bunny_wabbit",
+          "bio": "i am a widdle bunny"
+      },
+      "turdle": {
+        "price": 10,
+        "path": "../images/emoji-svg/1f422.svg",
+        "unicode": "1f422",
+        "isAnimal": true,
+        "petData": {
+          "feeding": {
+            "first": 0,
+            "last": 0,
+            "number": 0,
+            "canFeed": true,
+            "giveHunger": true
+          },
+          "hunger": 0,
+          "generation": 0,
+          "happiness": 100,
+          "intelligence": 84,
+          "charisma": 19,
+          "health": 100,
+          "attractiveness": 42,
+          "age": "baby",
+          "prevOwner": "JXV4B77XPI4NI"
+        },
+        "name": "turdle",
+        "bio": "i m green"
+      }
+    },
+  "items": {}
+}

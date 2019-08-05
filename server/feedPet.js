@@ -85,7 +85,11 @@ async function findHungryPets (db, id) {
     hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
     user.pets[hungryPets[i].name] = hungryPets[i]
   }
-  await db.put(`user/${id}`, user)
+  try {
+    await db.put(`user/${id}`, user)
+  } catch (err) {
+    throw err
+  }
 }
 
 function shouldFeedPet (feedTime) {

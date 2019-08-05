@@ -4,7 +4,13 @@ let feedPet = require('../../server/feedPet.js')
 console.log('Test currently being run: ', test.meta.file);
 
 async function setUpDatabase (cont) {
-  await cont.db.put(`user/${cont.testUser.id}`, cont.testUser)
+  try {
+    await cont.db.put(`user/${cont.testUser.id}`, cont.testUser)
+    await cont.db.put(`user/${cont.testUserHunger.id}`, cont.testUserHunger)
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
 }
 
 test.beforeEach(async t => {
@@ -12,6 +18,7 @@ test.beforeEach(async t => {
   t.context = {
     db: level('', { valueEncoding: 'json' }),
     testUser: require('./test-files/testUser.json'),
+    testUserHunger: require('./test-files/testUserHunger.json'),
     testItem: require('./test-files/testItem2.json'),
     testItem2: require('./test-files/testItem.json')
   }
@@ -172,14 +179,50 @@ test('getHungryPets returns list of hungry pets', t => {
 })
 
 test('findHungryPets increments pet hunger and updates db', async t => {
-  let oldUser = await t.context.db.get(`user/${t.context.testUser.id}`)
-  await feedPet.findHungryPets(t.context.db, t.context.testUser.id)
-  let updatedUser = await t.context.db.get(`user/${t.context.testUser.id}`)
-  let pets = Object.keys(updatedUser.pets)
-  t.plan(3)
-  for (let i = 0; i < pets.length; i++) {
-    let oldHunger = oldUser.pets[pets[i]].petData.hunger
-    let newHunger = updatedUser.pets[pets[i]].petData.hunger
-    t.is(newHunger, oldHunger + 10)
+  try {
+    let oldUser = await t.context.db.get(`user/${t.context.testUser.id}`)
+    await feedPet.findHungryPets(t.context.db, t.context.testUser.id)
+    let updatedUser = await t.context.db.get(`user/${t.context.testUser.id}`)
+    let pets = Object.keys(updatedUser.pets)
+    t.plan(3)
+    for (let i = 0; i < pets.length; i++) {
+      let oldHunger = oldUser.pets[pets[i]].petData.hunger
+      let newHunger = updatedUser.pets[pets[i]].petData.hunger
+      t.is(newHunger, oldHunger + 10)
+    }
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+})
+
+test('findHungryPets does NOT increment pet hunger when pet is not hungry', async t => {
+  try {
+    let oldUser = await t.context.db.get(`user/${t.context.testUserHunger.id}`)
+    await feedPet.findHungryPets(t.context.db, t.context.testUserHunger.id)
+    let updatedUser = await t.context.db.get(`user/${t.context.testUserHunger.id}`)
+    let oldHunger = oldUser.pets['bunny_wabbit'].petData.hunger
+    let newHunger = updatedUser.pets['bunny_wabbit'].petData.hunger
+    t.is(oldHunger, newHunger)
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+})
+
+test('findHungryPets only increments hunger for pets that are hungry', async t => {
+  try {
+    let oldUser = await t.context.db.get(`user/${t.context.testUserHunger.id}`)
+    await feedPet.findHungryPets(t.context.db, t.context.testUserHunger.id)
+    let updatedUser = await t.context.db.get(`user/${t.context.testUserHunger.id}`)
+    let bwHungry = oldUser.pets['bunny_wabbit'].petData.hunger
+    let bwHungry2 = updatedUser.pets['bunny_wabbit'].petData.hunger
+    let turdleHungry = oldUser.pets['turdle'].petData.hunger
+    let turdleHungry2 = updatedUser.pets['turdle'].petData.hunger
+    t.is(bwHungry, bwHungry2)
+    t.is(turdleHungry + 10, turdleHungry2)
+  } catch (err) {
+    console.log(err)
+    throw err
   }
 })
