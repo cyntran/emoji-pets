@@ -4,6 +4,7 @@ let db = level('emoji', { valueEncoding: 'json' })
 let dbOp = require('./database.js')
 let { purchase } = require('./purchase.js')
 let { sell } = require('./sell.js')
+let feedPet = require('./feedPet.js')
 let session = require('express-session')
 let path = require('path')
 let uuid = require('uuid/v4')
@@ -122,9 +123,12 @@ app.get('/pet/:username/:petname', async (req, res) => {
 app.get('/profile', async (req, res) => {
   try {
     let user = await dbOp.getUserById(db, req.user.id)
+    if (feedPet.getHungryPets(user).length) {
+      feedPet.findHungryPets(db, req.user.id)
+    }
     res.status(200).json(user)
   } catch (err) {
-    res.status(500).json({ error: 'User not logged in.' })
+    res.status(500).json({ error: 'Something went wrong.' })
   }
 })
 
@@ -242,6 +246,17 @@ app.get('/forsale/item/:id', async (req, res) => {
     res.status(200).json(item)
   } catch (err) {
     res.status(500).json({ message: 'Could not get for sale item.' })
+  }
+})
+
+// food, pet, user
+app.post('/action/feed', async (req, res) => {
+  //PARAMS: food - food unicode, pet - pet object, user - user object
+  try {
+    let user = await feedPet.feedPet(db, req.body.food, req.body.pet, req.user)
+    res.status(200).json(user.pets[req.body.pet.name])
+  } catch (err) {
+    res.status(500).json({ message: 'Could not feed -- sorry' })
   }
 })
 
