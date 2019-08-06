@@ -256,7 +256,8 @@ app.post('/action/feed', async (req, res) => {
     let user = await feedPet.feedPet(db, req.body.food, req.body.pet, req.user)
     res.status(200).json(user.pets[req.body.pet.name])
   } catch (err) {
-    res.status(500).json({ message: 'Could not feed -- sorry' })
+    console.log(err)
+    res.status(500).json({ message: `You can't feed your pet right now` })
   }
 })
 
