@@ -13,7 +13,7 @@
         "petData": {
           "feeding": {
             "first": 0,
-            "last": 0,
+            "last": 24,
             "number": 1,
             "canFeed": true,
             "giveHunger": false
@@ -43,7 +43,7 @@
             "last": 0,
             "number": 0,
             "canFeed": true,
-            "giveHunger": true
+            "giveHunger": false
           },
           "hunger": 0,
           "generation": 0,

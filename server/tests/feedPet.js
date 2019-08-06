@@ -155,14 +155,14 @@ test('updatePetStats floor for hunger is 0 and ceiling for health is 100', t => 
   t.is(t.context.testUser.pets['turdle'].petData.health, 100)
 })
 
-test('feedPet updates pet stats if appropriate feeding time', t => {
+test('feedPet updates pet stats if appropriate feeding time', async t => {
   let oldHealth = t.context.testUser.pets['turdle'].petData.health = 90
   let oldHunger = t.context.testUser.pets['turdle'].petData.hunger = 10
 
-  feedPet.feedPet(t.context.testItem2.unicode, t.context.testUser.pets['turdle'], t.context.testUser)
+  await feedPet.feedPet(t.context.testItem2.unicode, t.context.testUser.pets['turdle'], t.context.testUser)
 
   if (oldHealth != t.context.testUser.pets['turdle'].petData.health &&
-      oldHunger.hunger != t.context.testUser.pets['turdle'].petData.hunger) {
+      oldHunger != t.context.testUser.pets['turdle'].petData.hunger) {
         t.pass()
   } else {
     t.fail(`oldHealth: ${oldHealth}, oldHunger: ${oldHunger} \n newPetData: ${JSON.stringify(t.context.testUser.pets['turdle'].petData, null, 2)}`)
