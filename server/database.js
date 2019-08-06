@@ -1,6 +1,5 @@
 let { getRandomInt, isPetUnicode, isEmpty } = require('./dbScripts.js')
 let { AccessError, UpdateError } = require('./files/error.js')
-let { feedPet } = require('./feedPet.js')
 
 async function getUserById (db, id) {
   try {
@@ -113,14 +112,6 @@ function getForSale (db) {
   })
 }
 
-// food => food unicode
-// pet => pet object
-// id => user id
-async function updatePetAfterFeed (db, food, pet, user) {
-  let updated = feedPet(food, pet, user)
-  await db.put(`user/${user.id}`, user)
-}
-
 
 module.exports = {
   getEmojiByUnicode,
@@ -131,6 +122,5 @@ module.exports = {
   getUserByUsername,
   deleteUser,
   getPetFromUser,
-  addUser,
-  updatePetAfterFeed
+  addUser
 }
