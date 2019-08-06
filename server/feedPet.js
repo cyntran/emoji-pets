@@ -8,7 +8,7 @@ async function feedPet (db, food, pet, user) {
 
   pet.petData.feeding = pet.petData.feeding || {}
 
-  if (feed.canFeed) {
+  if (pet.petData.feeding.canFeed) {
     let feed = updateFeedTime(pet.petData.feeding)
     console.log('feedTime after', feed)
     user = updatePetStats(foodItem, pet, user)
@@ -20,9 +20,8 @@ async function feedPet (db, food, pet, user) {
       throw err
     }
   } else {
-    return {
-      error: `You can't feed your pet right now. `
-    }
+    console.log(`you can't feed your pet right now ${JSON.stringify(pet.petData.feeding)}`)
+    throw { error: `You can't feed your pet right now.` }    
   }
 }
 
