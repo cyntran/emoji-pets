@@ -607,3 +607,34 @@ label {
 #item-category {
   font-size: 1.2rem;
 }
+
+#feed-notification {
+  text-align: center;
+  position: fixed;
+  height: 200px;
+  width: 200px;
+  margin-left: -28px;
+  color: blanchedalmond;
+  border: none;
+  border-radius: 10px;
+  background: #ff5454;
+  padding: 10px;
+}
+
+#feed-notification-txt {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+#error-feed {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 0;
+}
+
+#feed-modal {
+  position: fixed;
+  height: 200px;
+  width: 220px;
+  top: 200px;
+}
