@@ -62,14 +62,14 @@ class PetProfile extends Component {
 // TODO: include hunger
 function getTraits (pet) {
   let petInfo = pet.petData
-  let progressObj = (({hunger, health, intelligence, charisma, attractiveness}) =>
-    ({hunger, health, intelligence, charisma, attractiveness}))(petInfo)
+  let progressObj = (({happiness, hunger, health, intelligence, charisma, attractiveness}) =>
+    ({happiness, hunger, health, intelligence, charisma, attractiveness}))(petInfo)
   return Object.keys(progressObj).map((key, i) => {
     return (
       <div className='pet-info-div' key={key + '-trait'}>
         <span className='pet-profile-span'>{key}: </span>
           <ProgressBar now={progressObj[key]}/>
-          <span className='pet-data'> {progressObj[key]}</span><br />
+          <span className='pet-data'> {progressObj[key]}/100 </span><br />
       </div>
     )
   })
