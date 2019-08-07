@@ -123,9 +123,6 @@ app.get('/pet/:username/:petname', async (req, res) => {
 app.get('/profile', async (req, res) => {
   try {
     let user = await dbOp.getUserById(db, req.user.id)
-    if (feedPet.getHungryPets(user).length) {
-      feedPet.findHungryPets(db, req.user.id)
-    }
     res.status(200).json(user)
   } catch (err) {
     res.status(500).json({ error: 'Something went wrong.' })
@@ -234,7 +231,9 @@ app.post('/item/sell', (req, res) => {
 })
 
 setInterval(async () => {
-  forSale = await dbOp.getForSale(db)}, 1000)
+  forSale = await dbOp.getForSale(db) }, 1000)
+
+setInterval(async () => { incrementHunger() }, 60000)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
@@ -260,6 +259,27 @@ app.post('/action/feed', async (req, res) => {
     res.status(500).json({ message: `You can't feed your pet right now` })
   }
 })
+
+// only updates hunger levels once per day
+async function incrementHunger () {
+  console.log(`----------increment hunger is being called-------------`)
+  let currentTimeInHrs = Date.now() / 1000 / 60 / 60
+  try {
+    let hoursPast = await db.get(`pethungerhour`)
+    if (currentTimeInHours - hoursPast >= 24) {
+      if (feedPet.getHungryPets(user).length) {
+        feedPet.findHungryPets(db, req.user.id)
+      }
+    }
+  } catch (err) {
+    if (err.notFound) {
+      console.log(`pethungerhour is being added to db`)
+      await db.put(`pethungerhour/`, currentTimeInHrs)
+      return
+    }
+    throw err
+  }
+}
 
 if (process.env.NODE_ENV === 'dev') {
   app.listen(8080, () => {
