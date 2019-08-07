@@ -114,10 +114,11 @@
 .sell-btn {
   background: #f44b42;
   color: white;
-  width: 60px;
-  height: 20px;
-  font-size: 1.2rem;
-  line-height: 10px;
+  width: 75%;
+  margin-top: 10px;
+  height: 30px;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .sell-btn:hover {
@@ -250,14 +251,6 @@
   background: white;
   margin: 4px;
   right: 5px;
-}
-
-.sell-btn {
-  bottom: 15px;
-  right: 0;
-  left: 0;
-  margin: 0 auto;
-  font-size: 1.5rem;
 }
 
 .feed-div {
@@ -611,19 +604,20 @@ label {
 #feed-notification {
   text-align: center;
   position: fixed;
-  height: 200px;
+  height: 325px;
   width: 200px;
-  margin-left: -28px;
   color: blanchedalmond;
   border: none;
   border-radius: 10px;
-  background: #ff5454;
+  background: #05863ee8;
   padding: 10px;
 }
 
 #feed-notification-txt {
-  font-size: 3rem;
+  font-size: 2.8rem;
   line-height: 1;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 #error-feed {
@@ -637,4 +631,22 @@ label {
   height: 200px;
   width: 220px;
   top: 200px;
+}
+
+#fed-food-img {
+  height: 70px;
+}
+
+#feed-num-txt {
+  font-size: 1.4rem;
+  margin: 0;
+  color: #ffe37b;
+}
+
+#go-dash-btn {
+  background: #c9edc9;
+  top: 200px;
+  width: 200px;
+  position: relative;
+  border: 2px dotted #444444;
 }
