@@ -7,10 +7,12 @@ class ItemModal extends Component {
     super (props)
     this.state = {
       isHidden: false,
+      user: this.props.user,
       item: this.props.item,
-      pets: this.props.pets,
+      pets: this.props.user.pets,
       error: false,
-      showNotif: false
+      showNotif: false,
+      feedNum: 0
     }
   }
 
@@ -45,34 +47,48 @@ class ItemModal extends Component {
           error: true
         })
       }
+      return response.json()
+    })
+    .then((res) => {
+      if (res.petData && res.petData.feeding.number < 3) {
+        this.setState({
+          feedNum: res.petData.feeding.number
+        })
+        setTimeout(() => {
+          window.location = `/pet/${this.state.user.username}/${petName}`
+        }, 2000)
+      } else {
+        window.location.reload()
+      }
     })
   }
 
   render () {
     if (this.state.showNotif) {
-      console.log('show notif is true')
+      let response = (!this.state.feedNum) ? `You can't feed your pet anymore today!` : `You can feed your pet ${3 - this.state.feedNum} more times today.`
       return (
         <div id='feed-modal'>
           <div id='feed-notification'>
-             <p id='feed-notification-txt'> You just fed your pet a food! </p>
+             <img src={this.state.item.path} id='fed-food-img'/>
+             <p id='feed-notification-txt'> You just fed your pet a {this.state.item.product}!<br />Refreshing...</p>
+             <p id='feed-num-txt'> {response} </p>
            </div>
         </div>
       )
     } else {
-      console.log('show notif is false')
       return (
         <div className='modal item-modal'>
           <img src={this.state.item.path} className='item-img'/>
-          { this.state.error && <p id='error-feed'> Oops, can't feed! </p> }
-          {!this.state.error && (<div className='feed-div'>
+          { this.state.error && <p id='error-feed'> Oops, can't feed!<br />Refreshing...</p> }
+          {!this.state.error &&
+            (<div className='feed-div'>
             <select className='pet-feed-select'>
               { getAnimalSelection(this.state.pets) }
             </select>
             <button className='item-btn feed-btn' onClick={this.toggleFeed.bind(this)}>feed</button>
+            <br />
+            <button className='sell-btn'>sell</button>
           </div>)}
-          <br />
-          <button className='item-btn sell-btn'>sell</button>
-          <br />
           <button className='item-btn close-btn' onClick={this.toggleHidden.bind(this)}>x</button>
         </div>
       )
