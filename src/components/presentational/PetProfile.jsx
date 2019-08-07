@@ -27,6 +27,7 @@ class PetProfile extends Component {
     return (
         <div className='pet-profile-container'>
           <button id='pet-home-btn' onClick={() => this.props.history.goBack()}>Back</button>
+          <button id='go-dash-btn' onClick={() => window.location = '/'}>Go To Dashboard</button>
           <h1 id='title'> Emoji <img id='heart-title' src='/images/emoji-svg/2764.svg'/> Pets </h1>
           <img id='pet-img-profile' src={'/' + path} />
           <h1 id='pet-name-profile'><u>{pet.name}</u></h1>
