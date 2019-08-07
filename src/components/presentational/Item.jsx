@@ -57,11 +57,11 @@ class Item extends Component {
               return res.json()
               }
             })
-            .then(user => {
+            .then(res => {
               if (!this.state.errorMsg) {
-                setTimeout(() =>  this.nextPath(`/pet/${user.username}/${this.state.name}`), 1000)
+                window.location = '/'
               } else {
-                setTimeout(() => this.nextPath(`/`), 1500)
+                setTimeout(window.location.reload(), 1000)
               }
             })
           }
