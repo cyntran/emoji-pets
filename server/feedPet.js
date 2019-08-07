@@ -6,7 +6,7 @@ async function feedPet (db, food, pet, user) {
   let foodItem = user.items[food]
   if (foodItem == null) return user
 
-  pet.petData.feeding = pet.petData.feeding || {}
+  pet.petData.feeding = pet.petData.feeding || createFeedTimeObj()
 
   if (pet.petData.feeding.canFeed) {
     let feed = updateFeedTime(pet.petData.feeding)
@@ -21,7 +21,7 @@ async function feedPet (db, food, pet, user) {
     }
   } else {
     console.log(`you can't feed your pet right now ${JSON.stringify(pet.petData.feeding)}`)
-    throw { error: `You can't feed your pet right now.` }    
+    throw { error: `You can't feed your pet right now.` }
   }
 }
 
@@ -44,6 +44,9 @@ function updatePetStats (foodItem, pet, user) {
 }
 
 function updateFeedTime (feedTime) {
+  if (isEmpty(feedTime)) {
+    feedTime = createFeedTimeObj()
+  }
   console.log('feedTime before', feedTime)
   let hours = Date.now() / 1000 / 60 / 60
   if (hours - feedTime.first < 24 && feedTime.number < 3) {
@@ -95,13 +98,7 @@ function getHungryPets (user) {
   let hungryPets = []
   for (let i = 0; i < pets.length; i++) {
     if (shouldFeedPet(pets[i])) {
-      user.pets[pets[i].name].petData.feeding = {
-        first: 0,
-        last: 0,
-        number: 0,
-        canFeed: true,
-        giveHunger: false
-      }
+      user.pets[pets[i].name].petData.feeding = createFeedTimeObj()
       hungryPets.push(pets[i])
     }
   }
@@ -110,6 +107,16 @@ function getHungryPets (user) {
 
 function incrementHunger (hunger) {
   return (hunger + 10 > 100) ? 100 : hunger + 10
+}
+
+function createFeedTimeObj () {
+  return {
+    first: 0,
+    last: 0,
+    number: 0,
+    canFeed: true,
+    giveHunger: false
+  }
 }
 
 
