@@ -8,7 +8,7 @@ class UserItem extends Component {
     this.state = {
       isHidden: true,
       item: this.props.item,
-      pets: this.props.pets
+      user: this.props.user
     }
   }
 
@@ -44,7 +44,7 @@ class UserItem extends Component {
   render () {
     return (
       <div className='items not-animal'>
-        { !this.state.isHidden && <ItemModal handleModal={this.checkHidden} item={this.state.item} pets={this.state.pets}/> }
+        { !this.state.isHidden && <ItemModal handleModal={this.checkHidden} user={this.state.user} item={this.state.item} /> }
         <img src={this.state.item.path} id='item' />
         <p id='item-category'>Category: {this.state.item.category}</p>
         <button className='open-item-btn' onClick={this.toggleHidden.bind(this)}>options</button>
