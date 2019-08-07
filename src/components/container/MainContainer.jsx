@@ -147,7 +147,7 @@ function showPets (usrInfo, routeHistory) {
 function showItems (usrInfo, routeHistory) {
   let items = Object.keys(usrInfo.items)
   return items.map((name, i) =>
-    <UserItem pets={usrInfo.pets} item={usrInfo.items[name]} key={i}/>
+    <UserItem pets={usrInfo.pets} user={usrInfo} item={usrInfo.items[name]} key={i}/>
   )
 }
 
