@@ -65,20 +65,6 @@ function updateFeedTime (feedTime) {
   return feedTime
 }
 
-async function findHungryPets (db, id) {
-  let user = await getUserById(db, id)
-  let hungryPets = getHungryPets(user)
-  for (let i = 0; i < hungryPets.length; i++) {
-    hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
-    user.pets[hungryPets[i].name] = hungryPets[i]
-  }
-  try {
-    await db.put(`user/${id}`, user)
-  } catch (err) {
-    throw err
-  }
-}
-
 function shouldFeedPet (pet) {
   pet.petData.feeding = pet.petData.feeding || {}
   let hours = Date.now() / 1000 / 60 / 60
@@ -86,23 +72,53 @@ function shouldFeedPet (pet) {
     return true
   } else {
     if (pet.petData.feeding.first && hours - pet.petData.feeding.first >= 24) {
-      pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true })
-      console.log('last feed was 24 hours ago', pet.petData.feeding)
+      pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
+      console.log('last feed was:', (hours - pet.petData.feeding.first))
     }
   }
   return pet.petData.feeding.giveHunger
 }
 
-function getHungryPets (user) {
-  let pets = Object.values(user.pets)
-  let hungryPets = []
-  for (let i = 0; i < pets.length; i++) {
-    if (shouldFeedPet(pets[i])) {
-      user.pets[pets[i].name].petData.feeding = createFeedTimeObj()
-      hungryPets.push(pets[i])
+async function updateHungryPets (db) {
+  try {
+    let hungryPets = await getAllHungryPets(db)
+    for (let i = 0; i < hungryPets.length; i++) {
+      hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
+      let user = await db.get(`user/${hungryPets[i].petData.prevOwner}`)
+      user.pets[hungryPets[i].name] = hungryPets[i]
+      console.log('updated pet:', hungryPets[i])
+      await db.put(`user/${user.id}`, user)
     }
+  } catch (err) {
+    throw err
   }
-  return hungryPets
+}
+
+function getAllHungryPets (db) {
+  let hungryPets = []
+  let key = 'user/'
+  return new Promise((res, rej) => {
+    try {
+      db.createReadStream({
+        gte: key,
+        lte: key + 'email/' || key + 'username/'
+      })
+      .on('data', (entry) => {
+        let pets = Object.values(entry.value.pets)
+        for (let i = 0; i < pets.length; i++) {
+          if (shouldFeedPet(pets[i])) {
+            entry.value.pets[pets[i].name].petData.feeding = createFeedTimeObj()
+            hungryPets.push(pets[i])
+          }
+        }
+      })
+      .on('end', () => {
+        res(hungryPets)
+      })
+    } catch (err) {
+      throw err
+    }
+  })
 }
 
 function incrementHunger (hunger) {
@@ -124,7 +140,7 @@ module.exports = {
   feedPet,
   updateFeedTime,
   updatePetStats,
-  findHungryPets,
-  getHungryPets,
+  updateHungryPets,
+  getAllHungryPets,
   incrementHunger
 }
