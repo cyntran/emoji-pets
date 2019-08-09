@@ -571,9 +571,19 @@ label {
   position: absolute;
   left: 20px;
   top: 20px;
-  font-size: 1.8rem;
-  height: 25px;
-  line-height: 4px;
+  height: 50px;
+  color: gray;
+  width: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  background: white;
+}
+
+#back-btn-img {
+  position: relative;
+  right: 3px;
+  bottom: 2px;
+  width: 50px;
 }
 
 #aww-poop {
@@ -590,7 +600,7 @@ label {
 
 #pet-name-profile {
   font-size: 4rem;
-  margin-bottom: 0;
+  margin: 0;
 }
 
 #pet-profile-bio {
@@ -644,9 +654,51 @@ label {
 }
 
 #go-dash-btn {
-  background: #c9edc9;
-  top: 200px;
-  width: 200px;
-  position: relative;
-  border: 2px dotted #444444;
+  background: #3b88c3cf;
+  width: 195px;
+  height: 50px;
+  margin-top: 30px;
+  margin-right: 10px;
+  border: 2px solid #c9edc9;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+#go-dash-txt {
+  display: inline-block;
+  vertical-align: middle;
+  font-weight: bold;
+  color: #c9edc9;
+  padding-right: 20px;
+  padding-bottom: 5px;
+}
+
+#home-img, #prof-sell-img {
+  height: 30px;
+  width: 40px;
+  margin-bottom: -4px;
+}
+
+#prof-sell-img {
+  margin-bottom: -8px;
+}
+
+#go-dash-txt-txt, #prof-sell-txt-txt {
+  margin-bottom: 3px;
+}
+
+#prof-sell-txt {
+  margin-right: 10px;
+}
+
+#prof-sell-btn {
+  width: 195px;
+  margin-top: 30px;
+  background: #f44b42e0;
+  border: 2px solid #c9edc9;
+  height: 50px;
+  border-radius: 10px;
+  color: #c9edc9;
+  cursor: pointer;
+  font-weight: bold;
 }
