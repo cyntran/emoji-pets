@@ -8,15 +8,102 @@ let { foodArr } = require('./files/saleItems.js')
 // outside of user activity (e.g, making restorations from bug fixes)
 // and a few helper functions.
 
-
 // addAllEmojis ()
 // addFoods ()
 // deleteTestUsers ()
 // deleteEmails ()
+// deleteFeedUpdateTime()
+// addPrevOwner ()
+// addPropertyToPet ()
+// fixBioPlacement()
 
+
+function deleteFeedUpdateTime () {
+  try {
+    db.del('pethungerhour/')
+    .then(console.log('deleted'))
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+
+function fixBioPlacement () {
+  let key = 'user/'
+  return new Promise((res, rej) => {
+    db.createReadStream({
+    gte: key,
+    lte: 'user/username/' && 'user/email/'
+    })
+    .on('data', async (entry) => {
+      let user = entry.value
+      if (!isEmpty(user.pets)) {
+        let pets = Object.values(entry.value.pets)
+        for (let i = 0; i < pets.length; i++) {
+          if (!pets[i].bio) {
+            user.pets[pets[i].name].bio = pets[i].petData.bio
+            console.log(user.pets[pets[i].name])
+          }
+        }
+        await db.put(`user/${user.id}`, user)
+      }
+    })
+    .on('end', () => res('finished'))
+  })
+}
 
 function isEmpty (obj) {
   return Object.keys(obj).length === 0 && obj.constructor === Object
+}
+
+function addPropertyToPet (propertyName, propertyValue) {
+  let key = 'user/'
+  return new Promise((res, rej) => {
+    db.createReadStream({
+    gte: key,
+    lte: 'user/username/' && 'user/email/'
+    })
+    .on('data', async (entry) => {
+      let user = entry.value
+      if (!isEmpty(user.pets)) {
+        let pets = Object.values(entry.value.pets)
+        for (let i = 0; i < pets.length; i++) {
+          if (!Object.getOwnPropertyNames(pets).includes(propertyName)) {
+            user.pets[pets[i].name].petData[propertyName] = propertyValue
+            console.log(user.pets[pets[i].name].petData)
+          }
+        }
+        await db.put(`user/${user.id}`, user)
+      }
+    })
+    .on('end', () => res('finished'))
+  })
+}
+
+function addPrevOwner () {
+  let users = []
+  let key = 'user/'
+  return new Promise((res, rej) => {
+    db.createReadStream({
+      gte: key,
+      lte: 'user/username/' && 'user/email/'
+    })
+    .on('data', async (data) => {
+      let userObj = data.value
+      if (!isEmpty(userObj.pets)) {
+        let petVals = Object.values(userObj.pets)
+        for (let i = 0; i < petVals.length; i++) {
+          userObj.pets[petVals[i].name].petData.prevOwner = userObj.id
+          console.log(userObj.pets[petVals[i].name])
+        }
+      }
+      await db.put(`user/${userObj.id}`, userObj)
+    })
+    .on('end', () => {
+      res(users)
+    })
+  })
 }
 
 function deleteTestUsers () {
