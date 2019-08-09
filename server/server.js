@@ -113,8 +113,11 @@ app.get('/profile/:username', async (req, res) => {
 app.get('/pet/:username/:petname', async (req, res) => {
   try {
     let pet = await dbOp.getPetFromUser(db, req.params.username, req.params.petname)
-    res.status(200).json(pet)
+    // TODO: usernames will have to be unique
+    let user = await dbOp.getUserByUsername(db, req.params.username)
+    res.status(200).json({ pet: pet, me: req.user.id, them: user.id})
   } catch (err) {
+    console.log(err)
     res.status(500).json({ message: 'Pet not found.' })
   }
 })
@@ -233,7 +236,7 @@ app.post('/item/sell', (req, res) => {
 setInterval(async () => {
   forSale = await dbOp.getForSale(db) }, 1000)
 
-setInterval(async () => { incrementHunger() }, 60000)
+setInterval(async () => { incrementHunger() }, 300000)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
@@ -261,20 +264,24 @@ app.post('/action/feed', async (req, res) => {
 })
 
 // only updates hunger levels once per day
+// TODO:
+// loop thru all the users without having them sign in,.
 async function incrementHunger () {
   console.log(`----------increment hunger is being called-------------`)
-  let currentTimeInHrs = Date.now() / 1000 / 60 / 60
+  let currentTimeInHrs = (Date.now() / 1000 / 60 / 60)
+  console.log('current time in hours', currentTimeInHrs)
   try {
-    let hoursPast = await db.get(`pethungerhour`)
-    if (currentTimeInHours - hoursPast >= 24) {
-      if (feedPet.getHungryPets(user).length) {
-        feedPet.findHungryPets(db, req.user.id)
+    let hoursPast = await db.get(`pethungerhour/`)
+    if (currentTimeInHrs - hoursPast >= 24) {
+      if (await feedPet.getAllHungryPets(db).length) {
+        await feedPet.updateHungryPets(db)
       }
     }
   } catch (err) {
     if (err.notFound) {
       console.log(`pethungerhour is being added to db`)
       await db.put(`pethungerhour/`, currentTimeInHrs)
+      await feedPet.updateHungryPets(db)
       return
     }
     throw err
