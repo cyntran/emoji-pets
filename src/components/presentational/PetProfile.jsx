@@ -1,7 +1,9 @@
 import React, { Component } from "react"
 import ProgressBar from "./ProgressBar.jsx"
 import config from "../../../clientConfig.js"
-
+let backBtn = '/images/emoji-svg/2b05.svg'
+let homeBtn = '/images/emoji-svg/1f3e0.svg'
+let sellBtn = '/images/emoji-svg/1f4b5.svg'
 
 class PetProfile extends Component {
   constructor (props) {
@@ -9,15 +11,20 @@ class PetProfile extends Component {
     this.state = {
       username: this.props.match.params.username,
       petname: this.props.match.params.petname,
-      pet: false
+      pet: false,
+      me: false,
+      them: false
     }
   }
 
   componentDidMount () {
     const { username, petname } = this.state
-    fetch(`${config.apiUrl}/pet/${username}/${petname}`)
+    fetch(`${config.apiUrl}/pet/${username}/${petname}`, { credentials: 'include' })
     .then(res => res.json())
-    .then(pet => { this.setState({ pet: pet }) })
+    .then(data => {
+      console.log(data)
+      this.setState({ pet: data.pet, them: data.them, me: data.me })
+    })
   }
 
   render () {
@@ -26,8 +33,9 @@ class PetProfile extends Component {
     if (pet) {
     return (
         <div className='pet-profile-container'>
-          <button id='pet-home-btn' onClick={() => this.props.history.goBack()}>Back</button>
-          <button id='go-dash-btn' onClick={() => window.location = '/'}>Go To Dashboard</button>
+          <button id='pet-home-btn' onClick={() => this.props.history.goBack()}>
+            <img id='back-btn-img' src={backBtn}/>
+          </button>
           <h1 id='title'> Emoji <img id='heart-title' src='/images/emoji-svg/2764.svg'/> Pets </h1>
           <img id='pet-img-profile' src={'/' + path} />
           <h1 id='pet-name-profile'><u>{pet.name}</u></h1>
@@ -42,7 +50,19 @@ class PetProfile extends Component {
             </span><br />
             {getTraits(pet)}
             <span className='pet-profile-span' id='pet-profile-bio-tag' >bio: </span> <br />
-            <span className='pet-data' id='pet-profile-bio'>{pet.bio}</span>
+            <span className='pet-data' id='pet-profile-bio'>{pet.bio}</span><br />
+            <button id='go-dash-btn' onClick={() => window.location = '/'}>
+              <span id='go-dash-txt'><img id='home-img' src={homeBtn}/>
+                <span id='go-dash-txt-txt'>Home</span>
+              </span>
+            </button>
+            { this.state.me === this.state.them &&
+              <button id='prof-sell-btn' onClick={() => window.location = '/'}>
+                <span id='prof-sell-txt'>
+                  <img id='prof-sell-img' src={sellBtn}/>
+                  <span id='prof-sell-txt-txt'>Sell</span>
+                </span>
+            </button> }
           </div>
         </div>
       )
