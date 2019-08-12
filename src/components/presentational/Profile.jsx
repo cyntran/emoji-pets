@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import config from "../../../clientConfig.js"
+import { getBackground } from '../../getRGBAverage.js'
 
 
 class Profile extends Component {
@@ -27,6 +28,17 @@ class Profile extends Component {
           error: user.message
         })
         return
+      }
+      let arr = []
+      if (user.items && user.pets) {
+        arr = Object.values(user.items).concat(Object.values(user.pets))
+      } else {
+        arr = (!user.items && !user.pets) ? [] : ((!user.items) ? Object.values(user.pets) : Object.values(user.items))
+      }
+      for (let i = 0; i < arr.length; i++) {
+        getBackground(arr[i].path).then((rgb) => {
+          document.querySelector(`#pet${i}`).style.background ='rgb('+rgb.r+','+rgb.g+','+rgb.b+',0.4'+')'
+        })
       }
       this.setState({
         user: user
@@ -60,7 +72,7 @@ class Profile extends Component {
         <h1 id='title'> Emoji <img id='heart-title' src='../images/emoji-svg/2764.svg'/> Pets </h1>
         <button id="home-btn" onClick={() => this.props.history.go(-1)}>Back</button>
         { this.state.user && showUser(this.state.user) } <br />
-        <p className='user-items-tag'>Pets </p> <hr id='hr'/>
+        <p className='items-tag'>Pets </p><br /><br />
         { this.state.user && showPets(this.state.user, this.props.history) }
       </div>
     )
@@ -84,7 +96,7 @@ function goToPet (username, petname, routeHistory) {
 function showPets (usrInfo, routeHistory) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='items' key={i} onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
+    <div className='user-items' id={`pet${i}`} key={i} onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
       <img src={usrInfo.pets[name].path} id='pet'/>
       <p id='pet-name'>{name}</p>
       <p id='pet-age'>age: {usrInfo.pets[name].petData.age}</p>
