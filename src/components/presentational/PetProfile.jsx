@@ -22,7 +22,6 @@ class PetProfile extends Component {
     fetch(`${config.apiUrl}/pet/${username}/${petname}`, { credentials: 'include' })
     .then(res => res.json())
     .then(data => {
-      console.log(data)
       this.setState({ pet: data.pet, them: data.them, me: data.me })
     })
   }
@@ -57,7 +56,7 @@ class PetProfile extends Component {
               </span>
             </button>
             { this.state.me === this.state.them &&
-              <button id='prof-sell-btn' onClick={() => window.location = '/'}>
+              <button id='prof-sell-btn' onClick={() => handleSell(this.state.petname, this.state.pet)}>
                 <span id='prof-sell-txt'>
                   <img id='prof-sell-img' src={sellBtn}/>
                   <span id='prof-sell-txt-txt'>Sell</span>
@@ -79,6 +78,29 @@ class PetProfile extends Component {
     }
   }
 }
+
+function handleSell (petName, info) {
+  if (!info || !petName) {
+    return
+  }
+  fetch(`${config.apiUrl}/item/sell`, {
+    method: 'POST',
+    body: JSON.stringify({ name: petName, info: info }),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then((res) => {
+    if (res.ok) {
+      // TODO: Shouldn't reload the whole page, just the component.
+      // Extract out showWallet, showPets, handleSell into own component.
+      // Then you can rerender that component by setting the state there.
+      window.location.reload()
+    }
+  })
+}
+
 
 // TODO: include hunger
 function getTraits (pet) {
