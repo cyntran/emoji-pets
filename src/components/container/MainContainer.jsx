@@ -4,6 +4,9 @@ import Menu from "../presentational/Menu.jsx"
 import UserItem from "../presentational/UserItem.jsx"
 import '../../css/styles.css'
 import config from "../../../clientConfig.js"
+import { getBackground } from '../../getRGBAverage.js'
+let coinBtn = '/images/emoji-svg/1f4b0.svg'
+
 
 class MainContainer extends Component {
   constructor () {
@@ -35,9 +38,15 @@ class MainContainer extends Component {
           showSignIn: true
         })
       } else {
-        this.setState({
+        this.setState ({
           user: prof
         })
+        let arr = Object.values(prof.items).concat(Object.values(prof.pets))
+        for (let i = 0; i < arr.length; i++) {
+          getBackground(arr[i].path).then((rgb) => {
+            document.querySelector(`#${arr[i].name}, .items`).style.background ='rgb('+rgb.r+','+rgb.g+','+rgb.b+',0.2'+')'
+          })
+        }
       }
     })
   }
@@ -95,7 +104,7 @@ function handleSell (petName, info) {
       // TODO: Shouldn't reload the whole page, just the component.
       // Extract out showWallet, showPets, handleSell into own component.
       // Then you can rerender that component by setting the state there.
-      window.location.reload()
+      window.location = '/'
     }
   })
 }
@@ -113,14 +122,20 @@ function logout() {
 }
 
 function showWallet (usrInfo, routeHistory) {
+  let nothing = <h1 id='no-purchases' style={{'fontSize':'3rem', 'color':'#808080ad'}}> Nothing yet </h1>
   return (
     <div id='wallet-group'>
       <h1 id='your-wallet'>{usrInfo.username}'s dashboard </h1>
-      <button id='wallet-amt-btn'>Coins:{usrInfo.balance}</button>
-      <p className='user-items-tag'>Pets</p> <hr id='hr'/>
-      { showPets(usrInfo, routeHistory) }
-      <p className='user-items-tag'>Items</p> <hr id='hr'/>
-      { showItems(usrInfo, routeHistory) }
+      <button id='wallet-amt-btn'>
+        <img id='coin-img' src={coinBtn}/>
+        <span id='coin-amt'>{usrInfo.balance}</span>
+      </button>
+      <p className='items-tag'>Pets</p>
+      <br />
+      { !isEmpty(usrInfo.pets) ? showPets(usrInfo, routeHistory) : nothing }
+      <p className='items-tag'>Items</p>
+      <br />
+      { !isEmpty(usrInfo.items) ? showItems(usrInfo, routeHistory) : nothing }
     </div>
   )
 }
@@ -128,7 +143,7 @@ function showWallet (usrInfo, routeHistory) {
 function showPets (usrInfo, routeHistory) {
   let petNames = Object.keys(usrInfo.pets)
   return petNames.map((name, i) =>
-    <div className='items' key={i}>
+    <div className='pet-items' id={name} key={i} style={{ background: usrInfo.pets[name].background }}>
       <div onClick={() => goToPet(usrInfo.username, name, routeHistory)}>
         <p className='see-bio-text'> click me! </p>
         <img src={usrInfo.pets[name].path} id='pet'/>
