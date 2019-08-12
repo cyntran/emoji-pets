@@ -27,7 +27,6 @@ class SignInModal extends Component {
       })
 
       if (!isEmpty(errorData)) {
-        console.log(errorData)
         return
       }
 

@@ -17,7 +17,6 @@ class PetForm extends Component {
     }
     this.handleBioInput = this.handleBioInput.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    console.log('this.state.name', this.state.name)
   }
 
   nextPath (path) {
@@ -40,8 +39,6 @@ class PetForm extends Component {
     this.state.item.petData.bio = postData.bio
     let itemData = this.state.item
 
-    console.log('itemData', itemData)
-
     if (!isEmpty(data.error)) {
       this.setState({
         errors: data.error
@@ -52,8 +49,6 @@ class PetForm extends Component {
       })
 
       let buyData = { name: postData.name, bio: postData.bio }
-
-      console.log(buyData)
 
       fetch(`${config.apiUrl}/item/buy`, {
         method: 'POST',
@@ -75,7 +70,6 @@ class PetForm extends Component {
         return res.json()
       })
       .then((userInfo) => {
-        console.log(`${JSON.stringify(userInfo, null, 2)}: userInfo`)
         setTimeout(() => this.nextPath(`/pet/${userInfo.username}/${buyData.name}`), 1000)
       })
     }

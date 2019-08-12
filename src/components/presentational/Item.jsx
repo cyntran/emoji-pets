@@ -39,7 +39,6 @@ class Item extends Component {
     .then((res) => {
       if (res.ok) {
         this.setState({ signedIn: true })
-        console.log('this.state.name', this.state.name)
         fetch(`${config.apiUrl}/forsale/item/${this.state.name}`)
         .then(res => res.json())
         .then(data => {
@@ -47,7 +46,6 @@ class Item extends Component {
             this.setState({ showModal: true })
             return
           } else {
-            console.log('buy', this.state.name)
             fetch(`${config.apiUrl}/item/buy`, {
               method: 'POST',
               body: JSON.stringify({buyData: data, item: this.state.item}),
@@ -58,7 +56,6 @@ class Item extends Component {
             })
             .then(res => {
               if (!res.ok) {
-                console.log(res)
                 this.setState({ errorMsg: true })
                 return
               } else {

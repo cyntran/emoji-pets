@@ -31,7 +31,6 @@ class UserItem extends Component {
   }
 
   checkHidden = (data) => {
-    console.log(data)
     this.setState({ isHidden: data})
   }
 

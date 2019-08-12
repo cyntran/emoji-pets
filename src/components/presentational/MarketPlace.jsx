@@ -130,7 +130,6 @@ function parseItems (items) {
 
 async function getUser () {
   let response = await fetch(`${config.apiUrl}/profile`, { credentials: 'include' })
-  console.log(config.apiUrl)
   if (response.ok) {
     return response.json()
   } else {

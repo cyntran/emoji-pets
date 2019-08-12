@@ -27,7 +27,6 @@ class SignUpModal extends Component {
       })
 
       if (!isEmpty(errorData)) {
-        console.log(errorData)
         return
       }
 
