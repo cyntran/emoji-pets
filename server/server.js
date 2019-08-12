@@ -135,7 +135,21 @@ app.get('/profile', async (req, res) => {
 
 app.post('/signup', async (req, res) => {
   try {
-    await dbOp.getUserByEmail(db, req.body.email)
+    let user = await dbOp.getUserByEmail(db, req.body.email)
+    if (user && req.body.username === user.username) {
+      req.login(user, (err) => {
+        if (err) {
+          res.status(500).json({ message: 'Database save error.', loggedIn: false })
+          return
+        } else {
+          res.status(200).json({ loggedIn: true })
+          return
+        }
+      })
+    }
+    if (req.body.username != user.username) {
+      res.status(500).json({ message: 'Email already in use.'})
+    }
   } catch (err) {
     if (!err.notFound) {
       res.status(500).json({ message: 'Email already in use.'})
@@ -236,7 +250,7 @@ app.post('/item/sell', (req, res) => {
 setInterval(async () => {
   forSale = await dbOp.getForSale(db) }, 1000)
 
-setInterval(async () => { incrementHunger() }, 300000)
+setInterval(async () => { incrementHunger() }, 30 * 60000)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
@@ -269,12 +283,13 @@ app.post('/action/feed', async (req, res) => {
 async function incrementHunger () {
   console.log(`----------increment hunger is being called-------------`)
   let currentTimeInHrs = (Date.now() / 1000 / 60 / 60)
-  console.log('current time in hours', currentTimeInHrs)
   try {
     let hoursPast = await db.get(`pethungerhour/`)
+    console.log('currentTimeInHrs - hoursPast', currentTimeInHrs - hoursPast)
     if (currentTimeInHrs - hoursPast >= 24) {
-      if (await feedPet.getAllHungryPets(db).length) {
+      if (await feedPet.getAllHungryPets(db)) {
         await feedPet.updateHungryPets(db)
+        await db.put(`pethungerhour/`, currentTimeInHrs)
       }
     }
   } catch (err) {
