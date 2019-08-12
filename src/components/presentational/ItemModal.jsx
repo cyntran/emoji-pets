@@ -14,6 +14,7 @@ class ItemModal extends Component {
       showNotif: false,
       feedNum: 0
     }
+    this.toggleFeed = this.toggleFeed.bind(this)
   }
 
   toggleHidden () {
@@ -23,11 +24,9 @@ class ItemModal extends Component {
     })
   }
 
-  toggleFeed () {
+  toggleFeed (petName) {
     let item = this.state.item
     let pets = this.state.pets
-    let e = document.querySelector('.pet-feed-select')
-    let petName = e.options[e.selectedIndex].value
     let petInfo = pets[petName]
     fetch(`${config.apiUrl}/action/feed`, {
       method: 'POST',
@@ -55,10 +54,12 @@ class ItemModal extends Component {
           feedNum: res.petData.feeding.number
         })
         setTimeout(() => {
-          window.location = `/pet/${this.state.user.username}/${petName}`
-        }, 2000)
+          window.location.reload()
+        }, 1000)
       } else {
-        window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
       }
     })
   }
@@ -77,18 +78,19 @@ class ItemModal extends Component {
       )
     } else {
       return (
-        <div className='modal item-modal'>
+        <div className='item-modal'>
           <img src={this.state.item.path} className='item-img'/>
-          { this.state.error && <p id='error-feed'> Oops, can't feed!<br />Refreshing...</p> }
+          { this.state.error && <p id='error-feed'> You can't feed your pet anymore today! <br />Refreshing...</p> }
           {!this.state.error &&
-            (<div className='feed-div'>
-            <select className='pet-feed-select'>
-              { getAnimalSelection(this.state.pets) }
-            </select>
-            <button className='item-btn feed-btn' onClick={this.toggleFeed.bind(this)}>feed</button>
-            <br />
-            <button className='sell-btn'>sell</button>
-          </div>)}
+            (<div>
+              <p id='select-pet-feed-txt'> Select Pet To Feed </p>
+              <div style={{'overflow': 'scroll', 'height': '250px', 'background': '#0000006b'}}>
+                { getAnimalSelection(this.state.pets, this.toggleFeed) }
+              </div>
+              <br />
+              <button className='sell-btn' onClick={() => sellItem(this.state.item.unicode, this.state.item)}>sell {this.state.item.product}</button>
+            </div>
+          )}
           <button className='item-btn close-btn' onClick={this.toggleHidden.bind(this)}>x</button>
         </div>
       )
@@ -96,11 +98,31 @@ class ItemModal extends Component {
   }
 }
 
+function sellItem (itemName, itemInfo) {
+  fetch(`${config.apiUrl}/item/sell`, {
+    method: 'POST',
+    body: JSON.stringify({
+      name: itemName,
+      info: itemInfo
+    }),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      window.location = '/'
+    }
+  })
+}
 
-function getAnimalSelection (pets) {
-  let petArr = Object.keys(pets)
-  return petArr.map((name, i) =>
-    <option value={name} key={i}>{name}</option>
+function getAnimalSelection (pets, feed) {
+  return Object.values(pets).map((pet, i) =>
+  <span key={i} style={{ 'margin': '8px', 'padding': '0', 'display':'inline-block' }}>
+    <img className='pet-feed-choice' src={pet.path} id={pet.name} onClick={() => feed(pet.name)}/>
+    <p style={{ 'margin': '0', 'fontSize': '1.5rem', 'marginTop': '-10px', 'color': 'white' }}> { pet.name } </p>
+  </span>
   )
 }
 
