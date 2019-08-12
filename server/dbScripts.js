@@ -11,7 +11,6 @@ let { foodArr } = require('./files/saleItems.js')
 // addAllEmojis ()
 // addFoods ()
 // deleteTestUsers ()
-// deleteEmails ()
 // deleteFeedUpdateTime()
 // addPrevOwner ()
 // addPropertyToPet ()
@@ -123,6 +122,7 @@ function deleteTestUsers () {
     for (let i = 0; i < id.length; i++) {
       await db.del(`user/${id[i]}`)
     }
+    deleteEmails()
   })
 }
 
