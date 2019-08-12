@@ -71,7 +71,7 @@ function shouldFeedPet (pet) {
   if (isEmpty(pet.petData.feeding)) {
     return true
   } else {
-    if (pet.petData.feeding.first && hours - pet.petData.feeding.first >= 24) {
+    if (hours - pet.petData.feeding.first >= 24) {
       pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
       console.log('last feed was:', (hours - pet.petData.feeding.first))
     }
