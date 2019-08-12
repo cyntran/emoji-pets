@@ -18,24 +18,43 @@
   text-align: center;
 }
 
-.menu-container {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 160px;
-}
-
 .item-container {
   display: inline-block;
   margin: 15px;
-  border: 2px solid #e8e8e8;
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 10px;
 }
 
-.item-description {
+.prev-own-tag {
+  font-size: 1.5rem;
+  margin: -10px;
+  margin-bottom: 5px;
+  border-radius: 10px 10px 0px 0px;
+  padding: 5px;
+  color: white;
+  top: 0;
+  left: 0;
+  position: relative;
+  background: #ff000099;
+}
+
+#item-cost {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #4faf2bad;
+  line-height: 0;
+}
+
+#item-quan {
   font-size: 1.4rem;
-  line-height: 6px;
+  color: #dc4e0ab5;
+  line-height: 0;
+  font-weight: bold;
+}
+
+#doll-img {
+  width: 27px;
+  margin-bottom: -5px;
 }
 
 .market-container {
@@ -56,12 +75,11 @@
   text-align: left;
 }
 
-.items {
+.pet-items {
   display: inline-block;
   margin: 15px;
   margin-top: 30px;
   padding: 20px;
-  border: 2px solid;
   border-radius: 9px;
   box-shadow: 10px 10px #888888;
   cursor: pointer;
@@ -81,6 +99,7 @@
   border-radius: 10px;
   background: white;
   margin: 0 auto;
+  margin-top: 50px;
   right: 0;
   left: 0;
   top: 0;
@@ -112,7 +131,7 @@
 }
 
 .sell-btn {
-  background: #f44b42;
+  background: #f44b42ad;
   color: white;
   width: 75%;
   margin-top: 10px;
@@ -130,16 +149,33 @@
 }
 
 .profile-container {
-  position: absolute;
-  width: 80%;
-  top: 100px;
+  margin-bottom: 20%;
 }
 
-.user-items-tag {
-  text-align: left;
+.user-items {
+  width: 200px;
+  padding: 20px 0px;
+  margin: 10px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.user-items:hover {
+  cursor: pointer;
+}
+
+.items-tag {
+  border-radius: 4px;
   font-size: 2rem;
   margin-bottom: -10px;
   margin-left: 10px;
+  background: #c9edc961;
+  height: 30px;
+  color: #0000004a;
+  text-align: right;
+  line-height: 1;
+  padding-right: 20px;
+  font-weight: bold;
 }
 
 .pet-profile-details {
@@ -195,17 +231,18 @@
 
 .item-modal {
   position: fixed;
-  height: 200px;
-  width: 220px;
-  top: 200px;
-  border: 1.5px solid black;
+  height: 520px;
+  width: 300px;
+  top: 100px;
   border-radius: 4px;
   margin-bottom: 10px;
   cursor: default;
+  background: #888888eb;
 }
 
 .open-item-btn {
-  background: #c9edc9;
+  background: #f44b42ad;
+  color: white;
 }
 
 .open-item-btn:hover {
@@ -248,16 +285,9 @@
   width: 10px;
   height: 15px;
   line-height: 1px;
-  background: white;
+  background: #888888eb;
   margin: 4px;
   right: 5px;
-}
-
-.feed-div {
-  position: absolute;
-  top: 120px;
-  left: 12px;
-  width: 250px;
 }
 
 .pet-feed-select {
@@ -280,8 +310,28 @@
   line-height: 2px;
 }
 
-.items:hover {
+.pet-feed-choice {
+  width: 80px;
+  background: #c9edc973;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.pet-feed-choice:hover {
   cursor: pointer;
+}
+
+.pet-items:hover {
+  cursor: pointer;
+}
+
+.not-animal {
+  display: inline-block;
+  background: rgba(157, 93, 69, 0.4);
+  width: 200px;
+  border-radius: 10px;
+  padding: 10px 0px;
+  margin: 10px;
 }
 
 .not-animal:hover {
@@ -294,6 +344,7 @@ button {
   border-radius: 4px;
   font-size: 1.5rem;
   font-family: 'Cute Font', cursive;
+  cursor: pointer;
 }
 
 button:focus {
@@ -344,20 +395,23 @@ label {
 }
 
 #title {
-  margin-top: 50px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   font-size: 5rem;
 }
 
 #market-text {
-  margin-top: 50px
+  font-size: 3rem;
+  color: #5f5d5d52
 }
 
 #adopt-btn {
-  background-color: #ff5454;
+  background-color: #ff5454d1;
   color: white;
   font-size: 2rem;
   padding: 10px;
   margin-top: 8px;
+  cursor: pointer;
 }
 
 #buy-btn {
@@ -368,9 +422,16 @@ label {
   padding: 1px 20px;
 }
 
+#clipboard-btn {
+  cursor: pointer;
+  width: 30px;
+  margin-bottom: -8px;
+  margin-left: 10px;
+}
+
 #home-btn {
   padding: 1px 20px;
-  background-color: #3bba18;
+  background-color: #69ce36db;
   color: white;
   font-size: 2rem;
   margin-top: 8px;
@@ -378,6 +439,7 @@ label {
 
 #wallet-group {
   text-align: center;
+  margin-bottom: 20%
 }
 
 #your-wallet {
@@ -463,7 +525,7 @@ label {
 #sign-out-btn {
   margin-top: 15px;
   font-size: 1.2rem;
-  background: #7a7a7a;
+  background: #7a7a7a7a;
   color: white;
 }
 
@@ -553,18 +615,26 @@ label {
   position: absolute;
   font-weight: bold;
   font-size: 1.4rem;
-  text-align: left;
+  text-align: center;
   left: 20px;
-  color: white;
+  height: 40px;
+  color: #5f5d5d99;
   border-radius: 3px;
-  width: 100px;
+  width: 120px;
   top: 12px;
   padding-left: 10px;
-  background: #e5cd30;
+  outline: none;
+  background: #ffe3294d;
 }
 
-#wallet-amt-btn {
-  outline: none;
+#coin-img {
+  width: 25px;
+  margin-bottom: -7px;
+  padding-right: 5px;
+}
+
+#coin-amt {
+  line-height: 1
 }
 
 #pet-home-btn {
@@ -631,9 +701,10 @@ label {
 }
 
 #error-feed {
-  font-size: 1.5rem;
+  font-size: 3.8rem;
   text-align: center;
   margin-top: 0;
+  color: white;
 }
 
 #feed-modal {
@@ -641,6 +712,12 @@ label {
   height: 200px;
   width: 220px;
   top: 200px;
+}
+
+#select-pet-feed-txt {
+  font-size: 2rem;
+  margin-bottom: 5px;
+  color: white;
 }
 
 #fed-food-img {
@@ -659,7 +736,6 @@ label {
   height: 50px;
   margin-top: 30px;
   margin-right: 10px;
-  border: 2px solid #c9edc9;
   cursor: pointer;
   border-radius: 10px;
 }
@@ -695,10 +771,50 @@ label {
   width: 195px;
   margin-top: 30px;
   background: #f44b42e0;
-  border: 2px solid #c9edc9;
   height: 50px;
   border-radius: 10px;
   color: #c9edc9;
   cursor: pointer;
   font-weight: bold;
+}
+
+#pet-prof-buy {
+  border: 9px solid #c1684e;
+  border-radius: 8px;
+  position: fixed;
+  background: white;
+  top: 15%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  height: 500px;
+  width: 450px;
+  z-index: 1000;
+}
+
+#clipboard-img {
+  margin-bottom: 0;
+  padding: 0;
+  height: 100px;
+}
+
+#pet-prof-stat-buy {
+  text-align: left;
+  padding: 8px;
+  margin: 5px;
+}
+
+#pet-prof-stat-h1 {
+  font-size: 3rem;
+  background: #99a9b4;
+  color: white;
+  margin: 0;
+}
+
+#close-btn-pet-prof-buy {
+  margin-top: 10px;
+  background: #ff5454cc;
+  color: white;
+  width: 90%;
+  cursor: pointer;
 }
