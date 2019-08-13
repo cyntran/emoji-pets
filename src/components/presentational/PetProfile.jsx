@@ -96,7 +96,7 @@ function handleSell (petName, info) {
       // TODO: Shouldn't reload the whole page, just the component.
       // Extract out showWallet, showPets, handleSell into own component.
       // Then you can rerender that component by setting the state there.
-      window.location.reload()
+      setTimeout(window.location = '/', 1000)
     }
   })
 }
