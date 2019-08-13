@@ -250,7 +250,7 @@ app.post('/item/sell', (req, res) => {
 setInterval(async () => {
   forSale = await dbOp.getForSale(db) }, 1000)
 
-setInterval(async () => { incrementHunger() }, 30 * 60000)
+setInterval(async () => { incrementHunger() }, 10000)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
@@ -278,8 +278,6 @@ app.post('/action/feed', async (req, res) => {
 })
 
 // only updates hunger levels once per day
-// TODO:
-// loop thru all the users without having them sign in,.
 async function incrementHunger () {
   console.log(`----------increment hunger is being called-------------`)
   let currentTimeInHrs = (Date.now() / 1000 / 60 / 60)
