@@ -37,7 +37,7 @@ class Profile extends Component {
       }
       for (let i = 0; i < arr.length; i++) {
         getBackground(arr[i].path).then((rgb) => {
-          document.querySelector(`#pet${i}`).style.background ='rgb('+rgb.r+','+rgb.g+','+rgb.b+',0.4'+')'
+          document.querySelector(`#pet${i}`).style.background ='rgb('+rgb.r+','+rgb.g+','+rgb.b+',0.2'+')'
         })
       }
       this.setState({
