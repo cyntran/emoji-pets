@@ -577,6 +577,11 @@ label {
   left: 22px;
 }
 
+#hourglass {
+  width: 50px;
+  margin-top: 10px;  
+}
+
 #purchasing-div {
   z-index: 1000;
   background: #ff4f4f;
