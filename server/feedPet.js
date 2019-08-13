@@ -30,8 +30,8 @@ async function feedPet (db, food, pet, user) {
 function updatePetStats (foodItem, pet, user) {
   let score = (!foodItem.isCrafted) ? 2 : 5
   if (pet.petData.health >= 20) {
-    pet.petData.hunger = (pet.petData.hunger - 5 < 0) ? 0 : pet.petData.hunger - 5
-    pet.petData.health = (pet.petData.health + 5 > 100) ? 100 : pet.petData.health + 5
+    pet.petData.hunger = (pet.petData.hunger - 10 < 0) ? 0 : pet.petData.hunger - 10
+    pet.petData.health = (pet.petData.health + 10 > 100) ? 100 : pet.petData.health + 10
     pet.petData.happiness = (pet.petData.happiness + score > 100) ? 100 : pet.petData.happiness + score
     if ((foodItem.quantity - 1) <= 0) {
       delete user.items[foodItem.unicode]
@@ -83,8 +83,20 @@ async function updateHungryPets (db) {
   try {
     let hungryPets = await getAllHungryPets(db)
     for (let i = 0; i < hungryPets.length; i++) {
-      hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
       let user = await db.get(`user/${hungryPets[i].petData.prevOwner}`)
+      hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
+      hungryPets[i].petData.happiness = decrementHappiness(hungryPets[i].petData.happiness)
+      if (hungryPets[i].petData.hunger >= 100) {
+        hungryPets[i].petData.health = decrementHealth(hungryPets[i].petData.health)
+        if (hungryPets[i].petData.health <= 0) {
+          delete user.pets[hungryPets[i].name]
+          user.deadPets = {
+            name: hungryPets[i],
+            alertUser: true
+          }
+          await db.put(`user/${user.id}`, user)
+        }
+      }
       user.pets[hungryPets[i].name] = hungryPets[i]
       console.log('updated pet:', hungryPets[i])
       await db.put(`user/${user.id}`, user)
@@ -92,6 +104,10 @@ async function updateHungryPets (db) {
   } catch (err) {
     throw err
   }
+}
+
+function decrementHappiness (happiness) {
+  return (happiness - 10 <= 0) ? 0 : happiness - 10
 }
 
 function getAllHungryPets (db) {
@@ -122,7 +138,14 @@ function getAllHungryPets (db) {
 }
 
 function incrementHunger (hunger) {
-  return (hunger + 10 > 100) ? 100 : hunger + 10
+  if (hunger + 25 >= 100) {
+    return 100
+  }
+  return hunger + 25
+}
+
+function decrementHealth (health) {
+  return (health - 10 <= 0) ? 0 : health - 10
 }
 
 function createFeedTimeObj () {
