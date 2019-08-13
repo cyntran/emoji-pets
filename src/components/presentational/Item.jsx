@@ -67,9 +67,9 @@ class Item extends Component {
             })
             .then(res => {
               if (!this.state.errorMsg) {
-                window.location = '/'
+                setTimeout(() => window.location = '/', 3000)
               } else {
-                setTimeout(window.location.reload(), 1000)
+                setTimeout(() => window.location.reload(), 3000)
               }
             })
           }
@@ -114,7 +114,7 @@ class Item extends Component {
             <p className='prev-own-tag'>previously owned</p>
           </div>
         }
-        {this.state.showPurchasingDiv && <div id='purchasing-div'><img src={hourGlass} style={{"width":"50px"}}/>Purchasing, please wait.</div>}
+        {this.state.showPurchasingDiv && <div id='purchasing-div'><img src={hourGlass} id='hourglass'/>Purchasing, please wait.</div>}
         <img className='emoji-buy' src={this.state.item.path} name={this.state.name}/>
         <p id='item-cost'><img id='doll-img' src={dollarBtn} />{this.state.price}</p>
         { (this.state.item.petData && this.state.item.petData.prevOwner) &&
