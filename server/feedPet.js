@@ -65,19 +65,6 @@ function updateFeedTime (feedTime) {
   return feedTime
 }
 
-function shouldFeedPet (pet) {
-  pet.petData.feeding = pet.petData.feeding || {}
-  let hours = Date.now() / 1000 / 60 / 60
-  if (isEmpty(pet.petData.feeding)) {
-    return true
-  } else {
-    if (hours - pet.petData.feeding.first >= 24) {
-      pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
-      console.log('last feed was:', (hours - pet.petData.feeding.first))
-    }
-  }
-  return pet.petData.feeding.giveHunger
-}
 
 async function updateHungryPets (db) {
   try {
@@ -106,8 +93,18 @@ async function updateHungryPets (db) {
   }
 }
 
-function decrementHappiness (happiness) {
-  return (happiness - 10 <= 0) ? 0 : happiness - 10
+function shouldFeedPet (pet) {
+  pet.petData.feeding = pet.petData.feeding || {}
+  let hours = Date.now() / 1000 / 60 / 60
+  if (isEmpty(pet.petData.feeding)) {
+    return true
+  } else {
+    if (hours - pet.petData.feeding.first >= 24) {
+      // console.log('last feed was:', (hours - pet.petData.feeding.first))
+      pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
+    }
+  }
+  return pet.petData.feeding.giveHunger
 }
 
 function getAllHungryPets (db) {
@@ -123,6 +120,7 @@ function getAllHungryPets (db) {
         let pets = Object.values(entry.value.pets)
         for (let i = 0; i < pets.length; i++) {
           if (shouldFeedPet(pets[i])) {
+            console.log(pets[i])
             entry.value.pets[pets[i].name].petData.feeding = createFeedTimeObj()
             hungryPets.push(pets[i])
           }
@@ -137,15 +135,16 @@ function getAllHungryPets (db) {
   })
 }
 
+function decrementHappiness (happiness) {
+  return (happiness < 10) ? 0 : happiness - 10
+}
+
 function incrementHunger (hunger) {
-  if (hunger + 25 >= 100) {
-    return 100
-  }
-  return hunger + 25
+  return (hunger > 75) ? 100 : hunger + 25
 }
 
 function decrementHealth (health) {
-  return (health - 10 <= 0) ? 0 : health - 10
+  return (health < 10) ? 0 : health - 10
 }
 
 function createFeedTimeObj () {
@@ -164,6 +163,10 @@ module.exports = {
   updateFeedTime,
   updatePetStats,
   updateHungryPets,
+  createFeedTimeObj,
   getAllHungryPets,
+  decrementHealth,
+  decrementHappiness,
+  shouldFeedPet,
   incrementHunger
 }
