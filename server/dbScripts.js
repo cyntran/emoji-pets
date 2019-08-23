@@ -27,7 +27,6 @@ function deleteFeedUpdateTime () {
   }
 }
 
-
 function fixBioPlacement () {
   let key = 'user/'
   return new Promise((res, rej) => {
