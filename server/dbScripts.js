@@ -326,6 +326,23 @@ function isPetUnicode (id) {
   return false
 }
 
+function getNumberOfPets (myDb) {
+  let count = 0
+  return new Promise((res, rej) => {
+    myDb.createReadStream({
+      gte: 'user/',
+      lte: String.fromCharCode('user/'.charCodeAt(0) + 1)
+    })
+    .on('data', (entry) => {
+      let pets = Object.keys(entry.value.pets)
+      count += pets.length
+    })
+    .on('end', () => {
+      res(count)
+    })
+  })
+}
+
 function deleteEmojis () {
   let key = 'emoji/'
   db.createReadStream({
@@ -346,5 +363,6 @@ function getRandomInt() {
 module.exports = {
   getRandomInt,
   isPetUnicode,
-  isEmpty
+  isEmpty,
+  getNumberOfPets
 }
