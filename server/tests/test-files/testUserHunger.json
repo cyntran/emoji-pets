@@ -18,16 +18,16 @@
             "canFeed": true,
             "giveHunger": false
             },
-            "hunger": 0,
+            "hunger": 20,
             "generation": 0,
             "happiness": 100,
-            "health": 100,
+            "health": 80,
             "intelligence": 69,
             "charisma": 88,
             "health": 100,
             "attractiveness": 12,
             "age": "baby",
-            "prevOwner": "JXV4B77XPI4NI"
+            "prevOwner": "JTV4B90XPI4QM"
           },
           "name": "bunny_wabbit",
           "bio": "i am a widdle bunny"
@@ -45,15 +45,15 @@
             "canFeed": true,
             "giveHunger": false
             },
-            "hunger": 0,
+            "hunger": 20,
             "generation": 0,
             "happiness": 100,
             "intelligence": 84,
             "charisma": 19,
-            "health": 100,
+            "health": 80,
             "attractiveness": 42,
             "age": "baby",
-            "prevOwner": "JXV4B77XPI4NI"
+            "prevOwner": "JTV4B90XPI4QM"
         },
         "name": "turdle",
         "bio": "i m green"
