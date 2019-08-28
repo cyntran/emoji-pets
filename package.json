@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava --watch",
+    "test": "ava --watch --verbose",
     "start": "NODE_ENV=dev webpack-dev-server --open --mode development --history-api-fallback",
     "build": "NODE_ENV=prod webpack --mode production",
     "dev-server": "NODE_ENV=dev node server/server.js",
