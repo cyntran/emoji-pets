@@ -8,14 +8,22 @@ let { foodArr } = require('./files/saleItems.js')
 // outside of user activity (e.g, making restorations from bug fixes)
 // and a few helper functions.
 
-// addAllEmojis ()
-// addFoods ()
-// deleteTestUsers ()
-// deleteFeedUpdateTime()
+
 // addPrevOwner ()
 // addPropertyToPet ()
 // fixBioPlacement()
 
+// nukeDatabase()
+//   .then(() => printUsers())
+
+
+async function nukeDatabase () {
+  await addAllPetEmojis ()
+  await addFoods ()
+  deleteUsers ()
+  deleteTestUsers()
+  deleteFeedUpdateTime()
+}
 
 function deleteFeedUpdateTime () {
   try {
@@ -113,7 +121,6 @@ function deleteTestUsers () {
   })
   .on('data', (data) => {
     if (!data.key.includes('kep') && !data.key.includes('mappum')) {
-      console.log(data)
       id.push(data.value)
     }
   })
@@ -183,25 +190,29 @@ function deleteEmails () {
 }
 
 function deleteUsers () {
-  let key = 'user/username/'
-  let id = []
+  let key = 'user/'
+  let users = []
   db.createReadStream({
     gte: key,
     lte: String.fromCharCode(key.charCodeAt(0) + 1)
   })
   .on('data', async (data) => {
-    if (!data.key.includes('kep') && !data.key.includes('mappum')) {
-      id.push(data.value)
-      await db.del(data.key)
+    let id = data.value.id
+    let email = data.value.email
+    let username = data.value.username
+    if (!data.key.includes(`user/email`)
+      && !data.key.includes('user/username')
+      && !username.includes('judd')
+      && !username.includes('kep')
+      && !username.includes('mappum')) {
+      await db.del(`user/${id}`)
+      await db.del(`user/email/${email}`)
+      await db.del(`user/username/${username}`)
+      users.push(username)
     }
   })
-  .on('end', async () => {
-    for (let i = 0; i < id.length; i++) {
-      let info = await db.get(`user/${id[i]}`)
-      await db.del(`user/${id[i]}`)
-      await db.del(`user/email/${info.email}`)
-    }
-    console.log('finished')
+  .on('end', () => {
+    console.log(`deleted the following usernames: ${users}`)
   })
 }
 
@@ -255,7 +266,7 @@ async function addFoods () {
   }
 }
 
-function addAllEmojis () {
+function addAllPetEmojis () {
   let imagePath = path.join(__dirname, '..', 'images/emoji-svg')
   fs.readdir(imagePath, (err, file) => {
     file.forEach(async (image) => {
@@ -352,7 +363,7 @@ function deleteEmojis () {
   .on('data', async (entry) => {
     await db.del(entry.key)
   })
-  .on('end', () => console.log('done'))
+  .on('end', () => console.log('deleted all emojis'))
 }
 
 // Gets a random integer between 10 and 100
