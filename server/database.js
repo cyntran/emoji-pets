@@ -1,9 +1,7 @@
 let { getRandomInt, isPetUnicode, isEmpty } = require('./dbScripts.js')
 let { AccessError, UpdateError } = require('./files/error.js')
 
-<<<<<<< Updated upstream
 async function getUserById (db, id) {
-=======
 let imagePath = path.join(__dirname, '..', 'images/emoji-svg')
 let images = []
 
