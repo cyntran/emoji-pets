@@ -81,7 +81,6 @@ async function printForSale () {
 }
 
 async function getUserById (id) {
->>>>>>> Stashed changes
   try {
     return await db.get(`user/${id}`)
   } catch (err) {
