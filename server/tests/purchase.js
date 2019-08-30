@@ -72,6 +72,8 @@ test('setUserItemProperties copies purchased pet properties over to user data', 
   let combined = Object.assign({}, t.context.testPetNew, petNameBio)
   delete combined.quantity
   purchase.setUserItemProperties(t.context.testUser, t.context.testPetNew, petNameBio, 0)
+  let hunger = (!t.context.testPetNew.petData.hunger) ? 25 : t.context.testPetNew.petData.hunger
+  combined.petData.hunger = hunger
   t.deepEqual(t.context.testUser.pets[petNameBio.name], combined)
 })
 
