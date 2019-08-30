@@ -120,9 +120,17 @@ test('sell updates market item object when user sells an item', async t => {
   t.is(updatedQuan, oldQuan + 1)
 })
 
-test('sell updates reserve item object when user sells an item', async t => {
+test('sell creates reserve item object when user sells an item', async t => {
   let old = await getReserve(t.context.db)
   await sell(t.context.db, t.context.testUser.id, null, t.context.testItem)
   let updated = await getReserve(t.context.db)
+  t.is(old + 5, updated)
+})
+
+test('sell correctly adds to reserve when retreiving reserve value', async t => {
+  let old = await getReserve(t.context.db) // 5
+  await t.context.db.put('admin/reserve', old) // store it back
+  await sell(t.context.db, t.context.testUser.id, null, t.context.testItem) // 10
+  let updated = await getReserve(t.context.db) // 10
   t.is(old + 5, updated)
 })
