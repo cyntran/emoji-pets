@@ -11,6 +11,7 @@ async function sell (db, id, itemName, item) {
       item = await updateMarketQuantity(db,  item)
     } else {
       delete userInfo.pets[itemName]
+      item.petData.prevOwner = userInfo.id
       await db.put(`emoji/forsale/${itemName}`, item)
     }
     await db.batch()
@@ -25,7 +26,7 @@ async function sell (db, id, itemName, item) {
 
 async function getReserve (db) {
   try {
-    return await db.get(`admin/reserve`)
+    return parseInt(await db.get(`admin/reserve`))
   } catch (err) {
     await db.put(`admin/reserve`, 5)
     return 5
