@@ -16,9 +16,23 @@ let { foodArr } = require('./files/saleItems.js')
 // nukeDatabase()
 //   .then(() => printUsers())
 
+// printReserve()
+
+async function deleteReserves () {
+  await db.del(`admin/reserve`)
+}
+
+async function printReserve () {
+  try {
+    let amountInRes = await db.get(`admin/reserve`)
+    console.log('Total Amount In Reserves: ', JSON.stringify(amountInRes))
+  } catch (err) {
+    console.log('No reserve stored')
+  }
+}
 
 async function nukeDatabase () {
-  await addAllPetEmojis ()
+  await addAllEmojis ()
   await addFoods ()
   deleteUsers ()
   deleteTestUsers()
@@ -266,13 +280,14 @@ async function addFoods () {
   }
 }
 
-function addAllPetEmojis () {
+function addAllEmojis () {
   let imagePath = path.join(__dirname, '..', 'images/emoji-svg')
   fs.readdir(imagePath, (err, file) => {
     file.forEach(async (image) => {
       let unicode = image.split('.')
       let filePath = path.join('../images/emoji-svg', image)
       await db.put(`emoji/${unicode[0]}`, { unicode: unicode[0], path: filePath})
+      console.log('added: ', unicode[0])
       if (isPetUnicode(unicode[0])) {
         let obj = {}
         obj.price = 10
