@@ -40,7 +40,7 @@ function setUserItemProperties (updatedUserInfo, item, buyData, newQuan) {
         "unicode": item.unicode,
         "isAnimal": true,
         "petData": {
-          "hunger": 25,
+          "hunger": (!item.petData.hunger) ? 25 : item.petData.hunger,
           "generation": item.petData.generation,
           "happiness": item.petData.happiness,
           "intelligence": item.petData.intelligence,
