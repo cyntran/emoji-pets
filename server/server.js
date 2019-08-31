@@ -250,7 +250,8 @@ app.post('/item/sell', (req, res) => {
 setInterval(async () => {
   forSale = await dbOp.getForSale(db) }, 1000)
 
-setInterval(async () => { incrementHunger() }, 10000)
+// every 5 minutes, check for hungry pets!
+setInterval(async () => { incrementHunger() }, 1000 * 60 * 5)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
@@ -277,6 +278,17 @@ app.post('/action/feed', async (req, res) => {
   }
 })
 
+app.get('/feedtime', async (req, res) => {
+  try {
+    let hoursNow = Date.now() / 1000 / 60 / 60
+    let hungerHour = await db.get(`pethungerhour/`)
+    res.status(200).json({ hours : (hoursNow - hungerHour)})
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: 'error getting hunger hour'})
+  }
+})
+
 // only updates hunger levels once per day
 async function incrementHunger () {
   console.log(`----------increment hunger is being called-------------`)
@@ -284,7 +296,7 @@ async function incrementHunger () {
   try {
     let hoursPast = await db.get(`pethungerhour/`)
     console.log('currentTimeInHrs - hoursPast', currentTimeInHrs - hoursPast)
-    if (currentTimeInHrs - hoursPast >= 24) {
+    if ((currentTimeInHrs - hoursPast) >= 24) {
       if (await feedPet.getAllHungryPets(db)) {
         await feedPet.updateHungryPets(db)
         await db.put(`pethungerhour/`, currentTimeInHrs)
