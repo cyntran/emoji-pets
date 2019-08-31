@@ -4,7 +4,7 @@ let { getUserById } = require('./database.js')
 // PARAMS: food - food unicode, pet - pet object, user - user object
 async function feedPet (db, food, pet, user) {
   let foodItem = user.items[food]
-  
+
   if (foodItem == null) return user
 
   pet.petData.feeding = pet.petData.feeding || createFeedTimeObj()
@@ -101,7 +101,7 @@ async function updateHungryPets (db) {
         }
       }
       user.pets[hungryPets[i].name] = hungryPets[i]
-      // console.log('updated pet:', hungryPets[i])
+      console.log(`USER: ${user.username} PET: ${hungryPets[i].name} NEW_HUNGER: ${hungryPets[i].petData.hunger}`)
       await db.put(`user/${user.id}`, user)
     }
   } catch (err) {
@@ -132,7 +132,7 @@ function shouldFeedPet (pet) {
   if (isEmpty(pet.petData.feeding)) {
     return true
   } else {
-    if (hours - pet.petData.feeding.first >= 24) {
+    if ((hours - pet.petData.feeding.first) >= 24) {
       // console.log('last feed was:', (hours - pet.petData.feeding.first))
       pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
     }
@@ -153,7 +153,7 @@ function getAllHungryPets (db) {
         let pets = Object.values(entry.value.pets)
         for (let i = 0; i < pets.length; i++) {
           if (shouldFeedPet(pets[i])) {
-            // console.log('should feed', pets[i])
+            console.log(`USER: ${entry.value.username} PET: ${pets[i].name} OLD_HUNGER: ${pets[i].petData.hunger}`)
             entry.value.pets[pets[i].name].petData.feeding = createFeedTimeObj()
             hungryPets.push(pets[i])
           }
