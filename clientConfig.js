@@ -6,7 +6,7 @@ if (process.env.NODE_ENV.startsWith('dev')) {
 
 if (process.env.NODE_ENV.startsWith('prod')) {
   module.exports = {
-    apiUrl: 'http://api.emojipet.com'
+    apiUrl: 'https://api.emojipet.com'
   }
 }
 
