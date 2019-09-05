@@ -78,7 +78,7 @@ app.use(passport.session());
 
 let allowedOrigins = [
   'http://localhost:8081',
-  'http://emojipet.com'
+  'https://emojipet.com'
 ]
 
 app.use((req, res, next) => {
