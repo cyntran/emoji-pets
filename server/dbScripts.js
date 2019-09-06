@@ -1,6 +1,7 @@
 let fs = require('fs')
 let path = require('path')
 let { foodArr } = require('./files/saleItems.js')
+let gift = require('./files/gifts.json')
 // let level = require('level')
 // let db = level('emoji', { valueEncoding: 'json' })
 
@@ -12,14 +13,40 @@ let { foodArr } = require('./files/saleItems.js')
 // addPrevOwner ()
 // addPropertyToPet ()
 // fixBioPlacement()
+// printReserve()
+// printHungryPets()
+// printFeedTime()
 
 // nukeDatabase()
 //   .then(() => printUsers())
 
-// printReserve()
+//addGiftToPets()
+
+// addAllEmojisToDB()
+
+
+function printHungryPets () {
+  let key = 'user/'
+  db.createReadStream({
+    gte: key,
+    lte: String.fromCharCode(key.charCodeAt(0) + 1)
+  })
+  .on('data', (entry) => {
+    let pets = entry.value.pets
+    console.log(JSON.stringify(pets, null, 2))
+  })
+}
 
 async function deleteReserves () {
   await db.del(`admin/reserve`)
+}
+
+async function printFeedTime () {
+  try {
+    console.log(await db.get('pethungerhour/'))
+  } catch (err) {
+    throw err
+  }
 }
 
 async function printReserve () {
@@ -47,6 +74,34 @@ function deleteFeedUpdateTime () {
     console.log(err)
     throw err
   }
+}
+
+function addGiftToPets () {
+  let key = 'user/'
+  db.createReadStream ({
+    gte: key,
+    lte: String.fromCharCode(key.charCodeAt(0) + 1)
+  })
+  .on('data', async (entry) => {
+    if (entry.value.pets) {
+      let pets = Object.values(entry.value.pets)
+      for (let i = 0; i < pets.length; i++) {
+        let unicode = pets[i].unicode
+        // console.log(`PET NAME: ${pets[i].name} GIFT: ${gift[unicode]}`)
+        Object.assign(pets[i], { gifts: gift[unicode] })
+        entry.value.pets[pets[i].name] = pets[i]
+        // console.log(`new user values: ${JSON.stringify(entry.value, null, 2)}`)
+        await db.put(`user/${entry.value.id}`, entry.value)
+      }
+    }
+  })
+  .on('end', () => {
+    db.createReadStream ({
+      gte: key,
+      lte: String.fromCharCode(key.charCodeAt(0) + 1)
+    })
+    .on('data', (entry) => console.log(entry.value.pets))
+  })
 }
 
 function fixBioPlacement () {
@@ -280,14 +335,54 @@ async function addFoods () {
   }
 }
 
-function addAllEmojis () {
+//TODO: Categorize all other emojis in the game.
+function addAllEmojisToDB () {
   let imagePath = path.join(__dirname, '..', 'images/emoji-svg')
   fs.readdir(imagePath, (err, file) => {
     file.forEach(async (image) => {
       let unicode = image.split('.')
       let filePath = path.join('../images/emoji-svg', image)
-      await db.put(`emoji/${unicode[0]}`, { unicode: unicode[0], path: filePath})
-      console.log('added: ', unicode[0])
+      let obj = {}
+      if (isPetUnicode(unicode[0])) {
+        obj.price = 10
+        obj.path = filePath
+        obj.unicode = unicode[0]
+        obj.isAnimal = true
+        obj.petData = {}
+        obj.petData.hunger = 0
+        obj.petData.generation = 0
+        obj.petData.happiness = 100
+        obj.petData.intelligence = getRandomInt()
+        obj.petData.charisma = getRandomInt()
+        obj.petData.health = 100
+        obj.petData.attractiveness = getRandomInt()
+        obj.petData.age = 'baby'
+        obj.petData.prevOwner = false
+      } else {
+        obj.path = filePath
+        obj.unicode = unicode[0]
+        obj.price = 10
+        obj.isAnimal = false
+        obj.quantity = 1
+        obj.category = 'Food'
+        if (foodArr.find(x => x[unicode[0]] != null)) {
+          let product = foodArr.find(x => x[unicode[0]])[unicode[0]]
+          obj.product = product
+        }
+        obj.isCrafted = false
+        obj.seller = null
+      }
+      await db.put(`emoji/${unicode[0]}`, obj)
+    })
+  })
+}
+
+function addAnimalEmojis () {
+  let imagePath = path.join(__dirname, '..', 'images/emoji-svg')
+  fs.readdir(imagePath, (err, file) => {
+    file.forEach(async (image) => {
+      let unicode = image.split('.')
+      let filePath = path.join('../images/emoji-svg', image)
       if (isPetUnicode(unicode[0])) {
         let obj = {}
         obj.price = 10
@@ -321,7 +416,6 @@ async function printForSale () {
     console.log(entry)
   })
 }
-
 
 function getAllPetsUnicode () {
   let emoji = '1f400'
