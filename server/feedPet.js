@@ -97,8 +97,8 @@ async function updateHungryPets (db) {
         hungryPets[i].petData.health = decrementHealth(hungryPets[i].petData.health)
         if (shouldKillPet(hungryPets[i])) {
           await killPet(db, user, hungryPets[i])
-          return
         }
+        continue
       }
       user.pets[hungryPets[i].name] = hungryPets[i]
       console.log(`USER: ${user.username} PET: ${hungryPets[i].name} NEW_HUNGER: ${hungryPets[i].petData.hunger}`)
@@ -121,7 +121,7 @@ function shouldKillPet (pet) {
 async function killPet (db, user, pet) {
   delete user.pets[pet.name]
   user.deadPets = user.deadPets || {}
-  user.deadPets = Object.assign(user.deadPets, { name: pet.name, alertUser: true })
+  user.deadPets = Object.assign({}, user.deadPets, { name: pet.name, alertUser: true })
   console.log(user.deadPets)
   await db.put(`user/${user.id}`, user)
 }
