@@ -247,6 +247,7 @@ app.post('/item/sell', (req, res) => {
   })
 })
 
+
 setInterval(async () => {
   forSale = await dbOp.getForSale(db) }, 1000)
 
