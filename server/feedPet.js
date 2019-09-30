@@ -1,5 +1,6 @@
 let { isEmpty } = require('./dbScripts.js')
 let { getUserById } = require('./database.js')
+let fs = require('fs')
 
 // PARAMS: food - food unicode, pet - pet object, user - user object
 async function feedPet (db, food, pet, user) {
@@ -10,7 +11,7 @@ async function feedPet (db, food, pet, user) {
   pet.petData.feeding = pet.petData.feeding || createFeedTimeObj()
 
   if (pet.petData.feeding.canFeed) {
-    let feed = updateFeedTime(pet.petData.feeding)
+    pet.petData.feeding = updateFeedTime(pet.petData.feeding)
     user = updatePetStats(foodItem, pet, user)
     try {
       await db.put(`user/${user.id}`, user)
@@ -26,9 +27,10 @@ async function feedPet (db, food, pet, user) {
 }
 
 
+// TODO: if health is below 20, user must purchase medicine to feed pet first
 function updatePetStats (foodItem, pet, user) {
   let score = (!foodItem.isCrafted) ? 2 : 5
-  if (pet.petData.health >= 20) {
+  if (pet.petData.health > 0) {
     pet.petData.hunger = decrementHunger(pet.petData.hunger)
     pet.petData.health = incrementHealth(pet.petData.health)
     pet.petData.happiness = incrementHappiness(pet.petData.happiness, score)
@@ -66,9 +68,6 @@ function firstFeedWas24HoursAgo (hours, feedTime) {
 }
 
 function updateFeedTime (feedTime) {
-  if (isEmpty(feedTime)) {
-    feedTime = createFeedTimeObj()
-  }
   feedTime.giveHunger = false
   let hours = Date.now() / 1000 / 60 / 60
   if (firstFeedWasWithin24Hours(hours, feedTime)) {
@@ -95,19 +94,44 @@ async function updateHungryPets (db) {
       hungryPets[i].petData.happiness = decrementHappiness(hungryPets[i].petData.happiness)
       if (isStarving(hungryPets[i])) {
         hungryPets[i].petData.health = decrementHealth(hungryPets[i].petData.health)
-        if (shouldKillPet(hungryPets[i])) {
-          await killPet(db, user, hungryPets[i])
-        }
-        continue
       }
-      user.pets[hungryPets[i].name] = hungryPets[i]
-      console.log(`USER: ${user.username} PET: ${hungryPets[i].name} NEW_HUNGER: ${hungryPets[i].petData.hunger}`)
-      await db.put(`user/${user.id}`, user)
+      if (shouldKillPet(hungryPets[i])) {
+        await killPet(db, user, hungryPets[i])
+      } else {
+        user.pets[hungryPets[i].name] = hungryPets[i]
+        await db.put(`user/${user.id}`, user)
+      }
     }
   } catch (err) {
     console.log(err)
     throw err
   }
+}
+
+function logToFile (username, petData) {
+  let petHungerAfter = incrementHunger(petData.petData.hunger)
+  let petHappinessAfter = decrementHappiness(petData.petData.happiness)
+  let petHealthAfter = petData.petData.health
+  if (isStarving(petData)) petHealthAfter = decrementHealth(petData.petData.health)
+  let lastFeed = (new Date(petData.petData.feeding.first * 1000 * 60 * 60)).toString()
+  let dataPrint = {
+    LAST_FED: lastFeed,
+    DATE_NOW: new Date(new Date()).toString(),
+    USER: username.toUpperCase(),
+    PET_NAME: petData.name,
+    PET_BEFORE: petData.petData,
+    PET_AFTER: {
+      HUNGER: petHungerAfter,
+      HAPPINESS: petHappinessAfter,
+      HEALTH: petHealthAfter,
+      IS_STARVING: isStarving(petData)
+    }
+  }
+  dataPrint = JSON.stringify(dataPrint, null, 3)
+  fs.appendFile('server/files/feedPetOutput.txt', dataPrint, (err) => {
+    if (err) throw err
+    console.log(`${username}'s pet ${petData.name} updated in feedOutput.txt`)
+  })
 }
 
 function isStarving (pet) {
@@ -128,17 +152,28 @@ async function killPet (db, user, pet) {
 
 function shouldFeedPet (pet) {
   pet.petData.feeding = pet.petData.feeding || {}
-  let hours = Date.now() / 1000 / 60 / 60
   if (isEmpty(pet.petData.feeding)) {
-    return true
-  } else {
-    if ((hours - pet.petData.feeding.first) >= 24) {
-      // console.log('last feed was:', (hours - pet.petData.feeding.first))
-      pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
-    }
+    pet.petData.feeding = createFeedTimeObj()
+  }
+  let hours = Date.now() / 1000 / 60 / 60
+  if ((hours - pet.petData.feeding.first) >= 24) {
+    pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
   }
   return pet.petData.feeding.giveHunger
 }
+
+// function shouldFeedPet (pet) {
+//   pet.petData.feeding = pet.petData.feeding || {}
+//   let hours = Date.now() / 1000 / 60 / 60
+//   if (isEmpty(pet.petData.feeding)) {
+//     return true
+//   } else {
+//     if ((hours - pet.petData.feeding.first) >= 24) {
+//       pet.petData.feeding = Object.assign({}, pet.petData.feeding, { giveHunger: true, canFeed: true })
+//     }
+//   }
+//   return pet.petData.feeding.giveHunger
+// }
 
 function getAllHungryPets (db) {
   let hungryPets = []
@@ -147,14 +182,14 @@ function getAllHungryPets (db) {
     try {
       db.createReadStream({
         gte: key,
-        lte: key + 'email/' || key + 'username/'
+        lte: 'user/email/' && 'user/username/'
       })
       .on('data', (entry) => {
-        let pets = Object.values(entry.value.pets)
+        let pets = Object.values(entry.value.pets || {})
         for (let i = 0; i < pets.length; i++) {
           if (shouldFeedPet(pets[i])) {
-            console.log(`USER: ${entry.value.username} PET: ${pets[i].name} OLD_HUNGER: ${pets[i].petData.hunger}`)
-            entry.value.pets[pets[i].name].petData.feeding = createFeedTimeObj()
+            logToFile(entry.value.username, pets[i])
+            // entry.value.pets[pets[i].name].petData.feeding = createFeedTimeObj()
             hungryPets.push(pets[i])
           }
         }

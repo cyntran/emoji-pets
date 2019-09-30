@@ -14,6 +14,7 @@ let LocalStrategy = require('passport-local').Strategy
 let RedisStore = require('connect-redis')(session)
 let bcrypt = require('bcrypt')
 let crypto = require('crypto')
+let fs = require('fs')
 let forSale = []
 
 
@@ -68,7 +69,7 @@ app.use(session({
     host: 'localhost',
     port: 6379
   }),
-  secret: 'abcdefghj',
+  secret: 'abcdefghj', //change this to random str based on env variable
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }
@@ -110,10 +111,11 @@ app.get('/profile/:username', async (req, res) => {
 })
 
 
+// pet names do not have to be unique,
+// TODO: usernames will have to be unique
 app.get('/pet/:username/:petname', async (req, res) => {
   try {
     let pet = await dbOp.getPetFromUser(db, req.params.username, req.params.petname)
-    // TODO: usernames will have to be unique
     let user = await dbOp.getUserByUsername(db, req.params.username)
     res.status(200).json({ pet: pet, me: req.user.id, them: user.id})
   } catch (err) {
@@ -132,7 +134,7 @@ app.get('/profile', async (req, res) => {
   }
 })
 
-
+// TODO: clean ugly code
 app.post('/signup', async (req, res) => {
   try {
     let user = await dbOp.getUserByEmail(db, req.body.email)
@@ -198,6 +200,8 @@ app.get('/signout' , (req, res) => {
   res.redirect('/')
 })
 
+
+// TODO: this should be /emoji/:id maybe
 app.get('/item/:id', async (req, res) => {
   let unicode = req.params.id.toLowerCase()
   try {
@@ -209,7 +213,6 @@ app.get('/item/:id', async (req, res) => {
 })
 
 // TODO: update user balance as well...
-// Handle errors.
 app.post('/item/buy', (req, res) => {
   if (!req.user) {
     res.status(500).json({ unauthorized: 'You are not signed in! '})
@@ -252,7 +255,7 @@ setInterval(async () => {
   forSale = await dbOp.getForSale(db) }, 1000)
 
 // every 5 minutes, check for hungry pets!
-setInterval(async () => { incrementHunger() }, 1000 * 60 * 5)
+setInterval(async () => { await incrementHunger() }, 1000)
 
 app.get('/forsale', (req, res) =>  {
   res.status(200).json(forSale)
@@ -279,6 +282,7 @@ app.post('/action/feed', async (req, res) => {
   }
 })
 
+//TODO: create dbOp functionn for getting pet hunger hour
 app.get('/feedtime', async (req, res) => {
   try {
     let hoursNow = Date.now() / 1000 / 60 / 60
@@ -288,6 +292,12 @@ app.get('/feedtime', async (req, res) => {
     console.log(err)
     res.status(500).json({ message: 'error getting hunger hour'})
   }
+})
+
+app.get('/feedtime/log', (req, res) => {
+  fs.readFile('server/files/feedPetOutput.txt', (err, data) => {
+    res.status(200).json(JSON.parse(data))
+ })
 })
 
 // only updates hunger levels once per day
