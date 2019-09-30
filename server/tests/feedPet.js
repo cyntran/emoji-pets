@@ -27,6 +27,7 @@ test.beforeEach(async t => {
     testItem2: require('./test-files/testItem.json'),
     fakeUser: {
       id: 'eeee',
+      username: 'testuserE',
       pets: {
         fakePetNotHungry: {
           petData: {
@@ -47,6 +48,7 @@ test.beforeEach(async t => {
     },
     fakeUser2: {
       id: 'eeee2',
+      username: 'testuserE2',
       pets: {
         fakePetHungry: {
           petData: {
