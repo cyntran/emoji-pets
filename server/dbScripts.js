@@ -9,7 +9,7 @@ let gift = require('./files/gifts.json')
 // outside of user activity (e.g, making restorations from bug fixes)
 // and a few helper functions.
 
-
+// deleteFeedUpdateTime()
 // addPrevOwner ()
 // addPropertyToPet ()
 // fixBioPlacement()
@@ -19,11 +19,24 @@ let gift = require('./files/gifts.json')
 
 // nukeDatabase()
 //   .then(() => printUsers())
-
 //addGiftToPets()
-
 // addAllEmojisToDB()
+// giveMoneyToEveryPlayer()
 
+const CHARITY = 500
+
+function giveMoneyToEveryPlayer () {
+  let key = 'user/'
+  db.createReadStream({
+    gte: key,
+    lte: 'user/username/' && 'user/email/'
+  })
+  .on('data', async (entry) => {
+    entry.value.balance += CHARITY
+    await db.put(`user/${entry.value.id}`, entry.value)
+    console.log(`new balance: ${entry.value.balance}`)
+  })
+}
 
 function printHungryPets () {
   let key = 'user/'
