@@ -297,12 +297,12 @@ app.get('/feedtime', async (req, res) => {
 
 app.get('/feedtime/log', (req, res) => {
   fs.readFile('server/files/feedPetOutput.txt', (err, data) => {
-    if (err) {
-      res.status(200).json({
-        message: 'No data collected yet'
-      })
+    if (!data.length) {
+      res.send('No data yet')
+      res.end()
+    } else {
+      res.status(200).json(JSON.parse(data))
     }
-    res.status(200).json(JSON.parse(data))
  })
 })
 
