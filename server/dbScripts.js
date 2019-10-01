@@ -24,7 +24,7 @@ let gift = require('./files/gifts.json')
 // giveMoneyToEveryPlayer()
 
 function deleteLog () {
-  db.del('hungrypets/log', () => { console.log('deleted log') })
+ db.del('hungrypets/log', () => { console.log('deleted log') })
 }
 
 const CHARITY = 500
