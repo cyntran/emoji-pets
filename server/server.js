@@ -93,7 +93,6 @@ app.use((req, res, next) => {
   next()
 })
 
-
 //TODO: only return the profile data you need.
 app.get('/profile/:username', async (req, res) => {
   if (!req.user) {
@@ -298,6 +297,11 @@ app.get('/feedtime', async (req, res) => {
 
 app.get('/feedtime/log', (req, res) => {
   fs.readFile('server/files/feedPetOutput.txt', (err, data) => {
+    if (err) {
+      res.status(200).json({
+        message: 'No data collected yet'
+      })
+    }
     res.status(200).json(JSON.parse(data))
  })
 })
