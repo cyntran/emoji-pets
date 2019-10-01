@@ -16,6 +16,8 @@ let bcrypt = require('bcrypt')
 let crypto = require('crypto')
 let fs = require('fs')
 let forSale = []
+const dotenv = require('dotenv');
+dotenv.config();
 
 
 //TODO: error handling
@@ -69,7 +71,7 @@ app.use(session({
     host: 'localhost',
     port: 6379
   }),
-  secret: 'abcdefghj', //change this to random str based on env variable
+  secret: process.env.SECRET_SESS,
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false }
