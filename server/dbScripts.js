@@ -23,6 +23,10 @@ let gift = require('./files/gifts.json')
 // addAllEmojisToDB()
 // giveMoneyToEveryPlayer()
 
+function deleteLog () {
+  db.del('hungrypets/log', () => { console.log('deleted log') })
+}
+
 const CHARITY = 500
 
 function giveMoneyToEveryPlayer () {
