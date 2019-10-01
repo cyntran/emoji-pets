@@ -84,24 +84,42 @@ function updateFeedTime (feedTime) {
   return feedTime
 }
 
+async function getHungryPetsLog (db) {
+  try {
+    return await db.get('hungrypets/log')
+  } catch (err) {
+    if (err.notFound) {
+      return []
+    } throw err
+  }
+}
 
 async function updateHungryPets (db) {
   try {
     let hungryPets = await getAllHungryPets(db)
+    let hungryPetsLog = await getHungryPetsLog(db)
     for (let i = 0; i < hungryPets.length; i++) {
       let user = await db.get(`user/${hungryPets[i].petData.prevOwner}`)
+      hungryPetsLog.push(logToFile(user.username, hungryPets[i]))
       hungryPets[i].petData.hunger = incrementHunger(hungryPets[i].petData.hunger)
       hungryPets[i].petData.happiness = decrementHappiness(hungryPets[i].petData.happiness)
       if (isStarving(hungryPets[i])) {
         hungryPets[i].petData.health = decrementHealth(hungryPets[i].petData.health)
       }
       if (shouldKillPet(hungryPets[i])) {
+        let deadPet = { DEAD_PET: hungryPets[i] }
+        hungryPetsLog.push(JSON.stringify(deadPet))
         await killPet(db, user, hungryPets[i])
       } else {
         user.pets[hungryPets[i].name] = hungryPets[i]
         await db.put(`user/${user.id}`, user)
       }
     }
+    await db.put('hungrypets/log', hungryPetsLog)
+    let result = '['.concat(hungryPetsLog).concat(']')
+    fs.writeFile('server/files/feedPetOutput.txt', result, (err) => {
+      if (err) throw err
+    })
   } catch (err) {
     console.log(err)
     throw err
@@ -127,11 +145,7 @@ function logToFile (username, petData) {
       IS_STARVING: isStarving(petData)
     }
   }
-  dataPrint = JSON.stringify(dataPrint, null, 3)
-  fs.appendFile('server/files/feedPetOutput.txt', dataPrint, (err) => {
-    if (err) throw err
-    console.log(`${username}'s pet ${petData.name} updated in feedOutput.txt`)
-  })
+  return JSON.stringify(dataPrint, null, 3)
 }
 
 function isStarving (pet) {
@@ -188,13 +202,16 @@ function getAllHungryPets (db) {
         let pets = Object.values(entry.value.pets || {})
         for (let i = 0; i < pets.length; i++) {
           if (shouldFeedPet(pets[i])) {
-            logToFile(entry.value.username, pets[i])
-            // entry.value.pets[pets[i].name].petData.feeding = createFeedTimeObj()
+            // hungryPetsLog.push(logToFile(entry.value.username, pets[i]))
             hungryPets.push(pets[i])
           }
         }
       })
       .on('end', () => {
+        // let result = '['.concat(hungryPetsLog).concat(']')
+        // fs.appendFile('server/files/feedPetOutput.txt', result, (err) => {
+        //   if (err) throw err
+        // })
         res(hungryPets)
       })
     } catch (err) {
