@@ -4,3 +4,4 @@ dump.rdb
 emoji/
 redis
 server/files/feedPetOutput.txt
+dist/
