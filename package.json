@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "ava --watch --verbose",
-    "start": "NODE_ENV=dev webpack-dev-server --open --mode development --history-api-fallback",
-    "build": "NODE_ENV=prod webpack --mode production",
-    "dev-server": "NODE_ENV=dev node server/server.js",
-    "server": "NODE_ENV=prod node server/server.js"
+    "start": "SET NODE_ENV=dev && webpack-dev-server --open --mode development --history-api-fallback",
+    "build": "SET NODE_ENV=prod && webpack --mode production",
+    "dev-server": "SET NODE_ENV=dev && node server/server.js",
+    "server": "SET NODE_ENV=prod && node server/server.js"
   },
   "repository": {
     "type": "git",
